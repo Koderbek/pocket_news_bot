@@ -1,0 +1,17 @@
+news_resource_url: "https://gnews.io/api/v4/top-headlines"
+
+db:
+  host: "localhost"
+  port: "5437"
+  username: "postgres"
+  dbname: "postgres"
+  sslmode: "disable"
+
+messages:
+  start: "Привет! Перед"
+  unknown_command: "Я не знаю такой команды :("
+
+errors:
+  default: "Произошла неизвестная ошибка."
+  invalid_url:  "Это невалидная ссылка."
+  unable_to_save: "Не удалось сохранить ссылку в Pocket. Попробуйте пожалуйста позже."
