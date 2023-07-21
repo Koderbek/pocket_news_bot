@@ -12,7 +12,7 @@ type Category interface {
 type ChatCategory interface {
 	Create(chatId, categoryId int, name string) error
 	Delete(chatId, categoryId int) error
-	GetByChatId(chatId int) ([]model.ChatCategory, error)
+	GetByChatId(chatId int64) ([]model.ChatCategory, error)
 }
 
 type Repository struct {

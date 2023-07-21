@@ -2,18 +2,21 @@ package telegram
 
 import (
 	"github.com/Koderbek/pocket_news_bot/pkg/config"
+	"github.com/Koderbek/pocket_news_bot/pkg/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 type Bot struct {
-	bot      *tgbotapi.BotAPI
-	messages config.Messages
+	bot        *tgbotapi.BotAPI
+	repository *repository.Repository
+	messages   config.Messages
 }
 
-func NewBot(bot *tgbotapi.BotAPI, messages config.Messages) *Bot {
+func NewBot(bot *tgbotapi.BotAPI, repository *repository.Repository, messages config.Messages) *Bot {
 	return &Bot{
-		bot:      bot,
-		messages: messages,
+		bot:        bot,
+		repository: repository,
+		messages:   messages,
 	}
 }
 

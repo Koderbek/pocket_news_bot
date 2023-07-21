@@ -35,7 +35,7 @@ func (r *ChatCategoryPostgres) Delete(chatId, categoryId int) error {
 	return err
 }
 
-func (r *ChatCategoryPostgres) GetByChatId(chatId int) ([]model.ChatCategory, error) {
+func (r *ChatCategoryPostgres) GetByChatId(chatId int64) ([]model.ChatCategory, error) {
 	var items []model.ChatCategory
 	query := fmt.Sprintf(`
 		SELECT cc.chat_id,

@@ -9,21 +9,23 @@ import (
 
 type Messages struct {
 	Start          string `mapstructure:"start"`
+	EditCategory   string `mapstructure:"edit_category"`
 	UnknownCommand string `mapstructure:"unknown_command"`
 }
 
 type Db struct {
-	Host     string `mapstructure:"start"`
-	Port     string `mapstructure:"start"`
-	Username string `mapstructure:"start"`
-	Password string `mapstructure:"start"`
-	DBName   string `mapstructure:"start"`
-	SSLMode  string `mapstructure:"start"`
+	Password string
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Username string `mapstructure:"username"`
+	DBName   string `mapstructure:"dbname"`
+	SSLMode  string `mapstructure:"sslmode"`
 }
 
 type Config struct {
 	TelegramToken   string
 	NewsResourceUrl string `mapstructure:"news_resource_url"`
+	Db              Db
 	Messages        Messages
 }
 
@@ -61,6 +63,10 @@ func unmarshal(cfg *Config) error {
 		return err
 	}
 
+	if err := viper.UnmarshalKey("db", &cfg.Db); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -71,6 +77,7 @@ func fromEnv(cfg *Config) error {
 	}
 
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
+	cfg.Db.Password = os.Getenv("DB_PASSWORD")
 
 	return nil
 }
