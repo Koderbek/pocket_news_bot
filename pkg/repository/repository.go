@@ -7,12 +7,14 @@ import (
 
 type Category interface {
 	GetAll() ([]model.Category, error)
+	GetByCode(code string) (*model.Category, error)
 }
 
 type ChatCategory interface {
-	Create(chatId, categoryId int, name string) error
-	Delete(chatId, categoryId int) error
+	Create(chatId int64, categoryId int8, name string) error
+	Delete(chatId int64, categoryId int8) error
 	GetByChatId(chatId int64) ([]model.ChatCategory, error)
+	HasChatCategory(chatId int64, categoryId int8) bool
 }
 
 type Repository struct {

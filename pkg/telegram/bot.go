@@ -30,13 +30,20 @@ func (b *Bot) Start() error {
 	}
 
 	for update := range updates {
-		if update.Message == nil { // ignore any non-Message Updates
+		if update.CallbackQuery != nil {
+			if err := b.handleCallbackQuery(update.CallbackQuery); err != nil {
+				return err
+			}
+
 			continue
 		}
 
-		// Handle commands
-		if err := b.handleCommand(update.Message); err != nil {
-			return err
+		if update.Message != nil {
+			if err := b.handleCommand(update.Message); err != nil {
+				return err
+			}
+
+			continue
 		}
 	}
 

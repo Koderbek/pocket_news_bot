@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"fmt"
+	"github.com/Koderbek/pocket_news_bot/pkg/model"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -36,29 +37,107 @@ func (b *Bot) handleEditCategoryCommand(message *tgbotapi.Message) error {
 		return err
 	}
 
-	chatCategories, err := b.repository.GetAll()
+	buttons, err := b.chatCategoryButtons(message.Chat.ID)
 	if err != nil {
 		return err
 	}
 
-	var buttons []tgbotapi.InlineKeyboardButton
-	for _, cat := range chatCategories {
-		buttons = append(buttons, tgbotapi.NewInlineKeyboardButtonData(cat.Name, cat.Code))
-	}
-
-	msgBut := tgbotapi.NewEditMessageReplyMarkup(
-		message.Chat.ID,
-		resMsg.MessageID,
-		tgbotapi.NewInlineKeyboardMarkup(buttons),
-	)
-
+	msgBut := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, resMsg.MessageID, *buttons)
 	_, err = b.bot.Send(msgBut)
-
 	return err
 }
 
 func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.UnknownCommand)
 	_, err := b.bot.Send(msg)
+	return err
+}
+
+func (b *Bot) handleCallbackQuery(callbackQuery *tgbotapi.CallbackQuery) error {
+	err := b.editChatCategory(callbackQuery)
+	if err != nil {
+		return err
+	}
+
+	_, err = b.bot.DeleteMessage(tgbotapi.NewDeleteMessage(callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID))
+	if err != nil {
+		return err
+	}
+
+	return b.handleEditCategoryCommand(callbackQuery.Message)
+}
+
+func (b *Bot) chatCategoryButtons(chatId int64) (*tgbotapi.InlineKeyboardMarkup, error) {
+	chatCategories, err := b.repository.ChatCategory.GetByChatId(chatId)
+	if err != nil {
+		return nil, err
+	}
+
+	categories, err := b.repository.Category.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var buttons [][]tgbotapi.InlineKeyboardButton
+	for _, cat := range categories {
+		btnName := "✅ " + cat.Name
+		for _, chatCat := range chatCategories {
+			if chatCat.CategoryId == cat.Id {
+				btnName = "❌ " + cat.Name
+				break
+			}
+		}
+
+		buttons = append(
+			buttons,
+			tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData(btnName, cat.Code)),
+		)
+	}
+
+	allCat := model.AllCategory()
+	buttons = append(
+		buttons,
+		tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData(allCat.Name, allCat.Code)),
+	)
+
+	inlineKeyboardMarkup := tgbotapi.NewInlineKeyboardMarkup(buttons...)
+	return &inlineKeyboardMarkup, nil
+}
+
+func (b *Bot) editChatCategory(callbackQuery *tgbotapi.CallbackQuery) error {
+	catCode := callbackQuery.Data
+	chatId := callbackQuery.Message.Chat.ID
+	allCat := model.AllCategory()
+	if catCode == allCat.Code {
+		allCats, err := b.repository.Category.GetAll()
+		if err != nil {
+			return err
+		}
+
+		for _, cat := range allCats {
+			if b.repository.ChatCategory.HasChatCategory(chatId, cat.Id) {
+				continue
+			}
+
+			err = b.repository.ChatCategory.Create(chatId, cat.Id, callbackQuery.Message.Chat.UserName)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	cat, err := b.repository.Category.GetByCode(catCode)
+	if err != nil {
+		return err
+	}
+
+	if b.repository.ChatCategory.HasChatCategory(chatId, cat.Id) {
+		err = b.repository.ChatCategory.Delete(chatId, cat.Id)
+	} else {
+		err = b.repository.ChatCategory.Create(chatId, cat.Id, callbackQuery.Message.Chat.UserName)
+	}
+
 	return err
 }

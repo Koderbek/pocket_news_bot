@@ -14,7 +14,7 @@ func NewChatCategoryPostgres(db *sqlx.DB) *ChatCategoryPostgres {
 	return &ChatCategoryPostgres{db: db}
 }
 
-func (r *ChatCategoryPostgres) Create(chatId, categoryId int, name string) error {
+func (r *ChatCategoryPostgres) Create(chatId int64, categoryId int8, name string) error {
 	query := fmt.Sprintf(
 		"INSERT INTO %s (chat_id, category_id, name) values ($1, $2, $3)",
 		chatCategoryTable,
@@ -25,7 +25,7 @@ func (r *ChatCategoryPostgres) Create(chatId, categoryId int, name string) error
 	return err
 }
 
-func (r *ChatCategoryPostgres) Delete(chatId, categoryId int) error {
+func (r *ChatCategoryPostgres) Delete(chatId int64, categoryId int8) error {
 	query := fmt.Sprintf(
 		"DELETE FROM %s WHERE chat_id = $1 AND category_id = $2",
 		chatCategoryTable,
@@ -45,7 +45,7 @@ func (r *ChatCategoryPostgres) GetByChatId(chatId int64) ([]model.ChatCategory, 
 			   c.name  as category_name
 		FROM %s cc
 				 INNER JOIN %s c on c.id = cc.category_id
-		WHERE chat_id = 1;
+		WHERE chat_id = $1;
 	`, chatCategoryTable, categoryTable)
 
 	if err := r.db.Select(&items, query, chatId); err != nil {
@@ -53,4 +53,12 @@ func (r *ChatCategoryPostgres) GetByChatId(chatId int64) ([]model.ChatCategory, 
 	}
 
 	return items, nil
+}
+
+func (r *ChatCategoryPostgres) HasChatCategory(chatId int64, categoryId int8) bool {
+	var chatCategory model.ChatCategory
+	query := fmt.Sprintf("SELECT category_id FROM %s WHERE chat_id=$1 AND category_id=$2", chatCategoryTable)
+	err := r.db.Get(&chatCategory, query, chatId, categoryId)
+
+	return err == nil && chatCategory.CategoryId != 0
 }
