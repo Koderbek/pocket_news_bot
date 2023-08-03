@@ -1,4 +1,5 @@
-news_resource_url: "https://gnews.io/api/v4/top-headlines"
+news:
+  url: "https://gnews.io/api/v4/top-headlines?lang=ru&category=%s&apikey=%s"
 
 db:
   host: "localhost"

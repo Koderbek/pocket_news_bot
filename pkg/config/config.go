@@ -22,11 +22,16 @@ type Db struct {
 	SSLMode  string `mapstructure:"sslmode"`
 }
 
+type News struct {
+	ApiKey string
+	Url    string `mapstructure:"url"`
+}
+
 type Config struct {
-	TelegramToken   string
-	NewsResourceUrl string `mapstructure:"news_resource_url"`
-	Db              Db
-	Messages        Messages
+	TelegramToken string
+	News          News
+	Db            Db
+	Messages      Messages
 }
 
 func Init() (*Config, error) {
@@ -67,6 +72,10 @@ func unmarshal(cfg *Config) error {
 		return err
 	}
 
+	if err := viper.UnmarshalKey("news", &cfg.News); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -78,6 +87,7 @@ func fromEnv(cfg *Config) error {
 
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
 	cfg.Db.Password = os.Getenv("DB_PASSWORD")
+	cfg.News.ApiKey = os.Getenv("NEWS_API_KEY")
 
 	return nil
 }
