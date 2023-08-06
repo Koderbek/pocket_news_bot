@@ -1,5 +1,10 @@
 news:
   url: "https://gnews.io/api/v4/top-headlines?lang=ru&category=%s&apikey=%s"
+  defaultTimeout: 5
+
+rkn:
+  url: "http://rubanlist.com/scripts/get.php?domain=%s"
+  defaultTimeout: 5
 
 db:
   host: "localhost"

@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-const defaultTimeout = 5 * time.Second
-
 type GNewsClient struct {
 	client *http.Client
 	repo   repository.Repository
@@ -22,7 +20,7 @@ type GNewsClient struct {
 
 func NewGNewsClient(repo repository.Repository, cfg config.News) *GNewsClient {
 	return &GNewsClient{
-		client: &http.Client{Timeout: defaultTimeout},
+		client: &http.Client{Timeout: time.Duration(cfg.DefaultTimeout) * time.Second},
 		repo:   repo,
 		cfg:    cfg,
 	}

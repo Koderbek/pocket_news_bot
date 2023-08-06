@@ -23,13 +23,20 @@ type Db struct {
 }
 
 type News struct {
-	ApiKey string
-	Url    string `mapstructure:"url"`
+	ApiKey         string
+	Url            string `mapstructure:"url"`
+	DefaultTimeout int8   `mapstructure:"defaultTimeout"`
+}
+
+type Rkn struct {
+	Url            string `mapstructure:"url"`
+	DefaultTimeout int8   `mapstructure:"defaultTimeout"`
 }
 
 type Config struct {
 	TelegramToken string
 	News          News
+	Rkn           Rkn
 	Db            Db
 	Messages      Messages
 }
@@ -73,6 +80,10 @@ func unmarshal(cfg *Config) error {
 	}
 
 	if err := viper.UnmarshalKey("news", &cfg.News); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("rkn", &cfg.Rkn); err != nil {
 		return err
 	}
 
