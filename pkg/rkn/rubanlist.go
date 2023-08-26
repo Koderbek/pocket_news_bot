@@ -1,29 +1,30 @@
 package rkn
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/Koderbek/pocket_news_bot/pkg/config"
-	"github.com/Koderbek/pocket_news_bot/pkg/model"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
-type RknBestClient struct {
+const notExist = "Домена нет в реестре"
+
+type RuBanListClient struct {
 	client *http.Client
 	cfg    config.Rkn
 }
 
-func NewRknBestClient(cfg config.Rkn) *RknBestClient {
-	return &RknBestClient{
+func NewRuBanListClientClient(cfg config.Rkn) *RuBanListClient {
+	return &RuBanListClient{
 		client: &http.Client{Timeout: cfg.DefaultTimeout * time.Second},
 		cfg:    cfg,
 	}
 }
 
-func (c *RknBestClient) IsForbidden(srcUrl string) (bool, error) {
+func (c *RuBanListClient) IsForbidden(srcUrl string) (bool, error) {
 	srcHost, err := parseHost(srcUrl)
 	if err != nil {
 		return true, err
@@ -34,17 +35,16 @@ func (c *RknBestClient) IsForbidden(srcUrl string) (bool, error) {
 		return true, err
 	}
 
-	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		errMessage := fmt.Sprintf("Code: %d. Status: %s", resp.StatusCode, resp.Status)
 		return true, errors.New(errMessage)
 	}
 
-	var siteInfo model.SiteInfo
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	if err := json.Unmarshal(body, &siteInfo); err != nil {
-		return true, errors.New("IsForbidden: can not unmarshal JSON")
+	if err != nil {
+		return true, err
 	}
 
-	return siteInfo.Result != 1 || len(siteInfo.Data.List) == 0, nil
+	return !strings.Contains(string(body), notExist), nil
 }

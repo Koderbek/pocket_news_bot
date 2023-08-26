@@ -14,13 +14,13 @@ import (
 
 type GNewsClient struct {
 	client *http.Client
-	repo   repository.Repository
+	repo   *repository.Repository
 	cfg    config.News
 }
 
-func NewGNewsClient(repo repository.Repository, cfg config.News) *GNewsClient {
+func NewGNewsClient(repo *repository.Repository, cfg config.News) *GNewsClient {
 	return &GNewsClient{
-		client: &http.Client{Timeout: time.Duration(cfg.DefaultTimeout) * time.Second},
+		client: &http.Client{Timeout: cfg.DefaultTimeout * time.Second},
 		repo:   repo,
 		cfg:    cfg,
 	}
@@ -33,16 +33,16 @@ func (c *GNewsClient) GetNews(category string) ([]model.Article, error) {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		errMessage := fmt.Sprintf("Code: %d. Status: %s", resp.StatusCode, resp.Status)
 		return nil, errors.New(errMessage)
 	}
 
 	var articles model.Articles
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err := json.Unmarshal(body, &articles); err != nil {
-		return nil, errors.New("can not unmarshal JSON")
+		return nil, errors.New("GetNews: can not unmarshal JSON")
 	}
 
 	return articles.Articles, nil

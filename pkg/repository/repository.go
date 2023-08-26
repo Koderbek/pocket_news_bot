@@ -14,6 +14,7 @@ type ChatCategory interface {
 	Create(chatId int64, categoryId int8, name string) error
 	Delete(chatId int64, categoryId int8) error
 	GetByChatId(chatId int64) ([]model.ChatCategory, error)
+	GetByCategoryId(categoryId int8) ([]model.ChatCategory, error)
 	HasChatCategory(chatId int64, categoryId int8) bool
 }
 

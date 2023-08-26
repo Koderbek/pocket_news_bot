@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"os"
+	"time"
 )
 
 type Messages struct {
@@ -24,13 +25,20 @@ type Db struct {
 
 type News struct {
 	ApiKey         string
-	Url            string `mapstructure:"url"`
-	DefaultTimeout int8   `mapstructure:"defaultTimeout"`
+	Url            string        `mapstructure:"url"`
+	DefaultTimeout time.Duration `mapstructure:"defaultTimeout"`
 }
 
 type Rkn struct {
-	Url            string `mapstructure:"url"`
-	DefaultTimeout int8   `mapstructure:"defaultTimeout"`
+	Url            string        `mapstructure:"url"`
+	DefaultTimeout time.Duration `mapstructure:"defaultTimeout"`
+}
+
+type Consumer struct {
+	MailingTimeEnd int           `mapstructure:"mailingTimeEnd"`
+	DailySleep     time.Duration `mapstructure:"dailySleep"`
+	CategorySleep  time.Duration `mapstructure:"categorySleep"`
+	RequestLimit   int8          `mapstructure:"requestLimit"`
 }
 
 type Config struct {
@@ -39,6 +47,7 @@ type Config struct {
 	Rkn           Rkn
 	Db            Db
 	Messages      Messages
+	Consumer      Consumer
 }
 
 func Init() (*Config, error) {
@@ -84,6 +93,10 @@ func unmarshal(cfg *Config) error {
 	}
 
 	if err := viper.UnmarshalKey("rkn", &cfg.Rkn); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("consumer", &cfg.Consumer); err != nil {
 		return err
 	}
 

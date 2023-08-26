@@ -45,10 +45,30 @@ func (r *ChatCategoryPostgres) GetByChatId(chatId int64) ([]model.ChatCategory, 
 			   c.name  as category_name
 		FROM %s cc
 				 INNER JOIN %s c on c.id = cc.category_id
-		WHERE chat_id = $1;
+		WHERE cc.chat_id = $1;
 	`, chatCategoryTable, categoryTable)
 
 	if err := r.db.Select(&items, query, chatId); err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+func (r *ChatCategoryPostgres) GetByCategoryId(categoryId int8) ([]model.ChatCategory, error) {
+	var items []model.ChatCategory
+	query := fmt.Sprintf(`
+		SELECT cc.chat_id,
+			   cc.name as chat_name,
+			   cc.category_id,
+			   c.code  as category_code,
+			   c.name  as category_name
+		FROM %s cc
+				 INNER JOIN %s c on c.id = cc.category_id
+		WHERE cc.category_id = $1;
+	`, chatCategoryTable, categoryTable)
+
+	if err := r.db.Select(&items, query, categoryId); err != nil {
 		return nil, err
 	}
 

@@ -6,6 +6,12 @@ rkn:
   url: "http://rubanlist.com/scripts/get.php?domain=%s"
   defaultTimeout: 5
 
+consumer:
+  dailySleep: 8
+  categorySleep: 10
+  requestLimit: 96
+  mailingTimeEnd: 0
+
 db:
   host: "localhost"
   port: "5437"
