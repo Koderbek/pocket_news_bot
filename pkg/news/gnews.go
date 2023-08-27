@@ -27,8 +27,7 @@ func NewGNewsClient(repo *repository.Repository, cfg config.News) *GNewsClient {
 }
 
 func (c *GNewsClient) GetNews(category string) ([]model.Article, error) {
-	url := fmt.Sprintf(c.cfg.Url, category, c.cfg.ApiKey)
-	resp, err := http.Get(url)
+	resp, err := http.Get(c.makeUrl(category))
 	if err != nil {
 		return nil, err
 	}
@@ -46,4 +45,11 @@ func (c *GNewsClient) GetNews(category string) ([]model.Article, error) {
 	}
 
 	return articles.Articles, nil
+}
+
+func (c *GNewsClient) makeUrl(category string) string {
+	now := time.Now()
+	date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+
+	return fmt.Sprintf(c.cfg.Url, category, date.Format(time.RFC3339), c.cfg.ApiKey)
 }

@@ -10,6 +10,7 @@ import (
 const (
 	categoryTable     = "category"
 	chatCategoryTable = "chat_category"
+	sentNewsTable     = "sent_news"
 )
 
 func NewPostgresDB(cfg config.Db) (*sqlx.DB, error) {

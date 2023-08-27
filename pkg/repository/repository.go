@@ -18,14 +18,22 @@ type ChatCategory interface {
 	HasChatCategory(chatId int64, categoryId int8) bool
 }
 
+type SentNews interface {
+	Save(linksHash []string) error
+	IsExists(linkHash string) bool
+	Clean() error
+}
+
 type Repository struct {
 	Category
 	ChatCategory
+	SentNews
 }
 
 func NewPostgresRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Category:     NewCategoryPostgres(db),
 		ChatCategory: NewChatCategoryPostgres(db),
+		SentNews:     NewSentNewsPostgres(db),
 	}
 }

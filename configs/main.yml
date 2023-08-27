@@ -1,5 +1,5 @@
 news:
-  url: "https://gnews.io/api/v4/top-headlines?lang=ru&category=%s&apikey=%s"
+  url: "https://gnews.io/api/v4/top-headlines?lang=ru&category=%s&from=%s&apikey=%s"
   defaultTimeout: 5
 
 rkn:

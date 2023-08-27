@@ -1,7 +1,6 @@
 package consumer
 
 import (
-	"fmt"
 	"github.com/Koderbek/pocket_news_bot/pkg/config"
 	"github.com/Koderbek/pocket_news_bot/pkg/model"
 	"github.com/Koderbek/pocket_news_bot/pkg/news"
@@ -10,6 +9,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strings"
 	"time"
+)
+
+const (
+	botUrl  = "https://t.me/pocket_news_bot"
+	botName = "🗞Pocket News"
 )
 
 type Consumer struct {
@@ -28,6 +32,11 @@ func (c *Consumer) Start() error {
 	var requestCount int8 = 0
 	for {
 		if time.Now().Hour() == c.cfg.MailingTimeEnd || requestCount > c.cfg.RequestLimit {
+			//Новый день. Чистим таблицу sent_news
+			if err := c.repo.SentNews.Clean(); err != nil {
+				return err
+			}
+
 			time.Sleep(c.cfg.DailySleep * time.Hour)
 		}
 
@@ -42,14 +51,14 @@ func (c *Consumer) Start() error {
 				break
 			}
 
-			news, err := c.newsClient.GetNews(cat.Code)
+			catNews, err := c.newsClient.GetNews(cat.Code)
 			if err != nil {
 				return err
 			}
 
-			var message []string
-			message = append(message, "#"+cat.Name)
-			for _, article := range news {
+			var linksHash []string
+			message := []string{makeMessageHeader(cat)}
+			for _, article := range catNews {
 				//isForbidden, err := c.rknClient.IsForbidden(article.Url)
 				//if err != nil {
 				//	return err
@@ -59,22 +68,21 @@ func (c *Consumer) Start() error {
 				//	continue
 				//}
 
+				linkHash := linkHashSum(article.Url)
+				if c.repo.SentNews.IsExists(linkHash) {
+					continue
+				}
+
+				linksHash = append(linksHash, linkHash)
 				message = append(message, makeMessage(article))
 			}
 
-			chatCategories, err := c.repo.ChatCategory.GetByCategoryId(cat.Id)
-			if err != nil {
+			if err = c.sendMessage(cat, strings.Join(message, "\n\n")); err != nil {
 				return err
 			}
 
-			//Отправка сообщений пользователям с данной категорией
-			messageText := strings.Join(message, "\n\n")
-			for _, chatCategory := range chatCategories {
-				go func(chatId int64) {
-					msg := tgbotapi.NewMessage(chatId, messageText)
-					msg.ParseMode = tgbotapi.ModeHTML
-					c.bot.Send(msg)
-				}(chatCategory.ChatId)
+			if err = c.repo.SentNews.Save(linksHash); err != nil {
+				return err
 			}
 
 			time.Sleep(c.cfg.CategorySleep * time.Minute)
@@ -82,6 +90,20 @@ func (c *Consumer) Start() error {
 	}
 }
 
-func makeMessage(article model.Article) string {
-	return fmt.Sprintf("<b>%s</b>\n<i>%s</i>\n<a href=\"%s\">Читать в источнике</a>", article.Title, article.Description, article.Url)
+func (c *Consumer) sendMessage(cat model.Category, messageText string) error {
+	chatCategories, err := c.repo.ChatCategory.GetByCategoryId(cat.Id)
+	if err != nil {
+		return err
+	}
+
+	//Отправка сообщений пользователям с данной категорией
+	for _, chatCategory := range chatCategories {
+		go func(chatId int64) {
+			msg := tgbotapi.NewMessage(chatId, messageText)
+			msg.ParseMode = tgbotapi.ModeHTML
+			c.bot.Send(msg)
+		}(chatCategory.ChatId)
+	}
+
+	return nil
 }
