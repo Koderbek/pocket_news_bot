@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	categoryTable     = "category"
-	chatCategoryTable = "chat_category"
-	sentNewsTable     = "sent_news"
+	categoryTable        = "category"
+	chatCategoryTable    = "chat_category"
+	sentNewsTable        = "sent_news"
+	domainBlacklistTable = "domain_blacklist"
 )
 
 func NewPostgresDB(cfg config.Db) (*sqlx.DB, error) {

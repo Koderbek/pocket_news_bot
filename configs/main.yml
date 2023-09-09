@@ -3,8 +3,8 @@ news:
   defaultTimeout: 5
 
 rkn:
-  url: "http://rubanlist.com/scripts/get.php?domain=%s"
-  defaultTimeout: 5
+  url: "https://reestr.rublacklist.net/api/v3/domains/"
+  defaultTimeout: 10
 
 consumer:
   dailySleep: 8

@@ -32,10 +32,19 @@ func main() {
 	bot := telegram.NewBot(botApi, repos, cfg.Messages)
 
 	newsClient := news.NewGNewsClient(repos, cfg.News)
-	rknClient := rkn.NewRuBanListClientClient(cfg.Rkn)
-	cnsmr := consumer.NewConsumer(botApi, newsClient, rknClient, repos, cfg.Consumer)
+	cnsmr := consumer.NewConsumer(botApi, newsClient, repos, cfg.Consumer)
+
+	rknClient := rkn.NewRoskomsvobodaClient(cfg.Rkn)
+	rknImport := rkn.NewImport(rknClient, repos)
+
 	go func() {
 		if err := cnsmr.Start(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	go func() {
+		if err := rknImport.Run(); err != nil {
 			log.Fatal(err)
 		}
 	}()

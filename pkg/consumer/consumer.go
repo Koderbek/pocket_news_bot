@@ -5,7 +5,6 @@ import (
 	"github.com/Koderbek/pocket_news_bot/pkg/model"
 	"github.com/Koderbek/pocket_news_bot/pkg/news"
 	"github.com/Koderbek/pocket_news_bot/pkg/repository"
-	"github.com/Koderbek/pocket_news_bot/pkg/rkn"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strings"
 	"time"
@@ -19,13 +18,12 @@ const (
 type Consumer struct {
 	bot        *tgbotapi.BotAPI
 	newsClient news.Client
-	rknClient  rkn.Client
 	repo       *repository.Repository
 	cfg        config.Consumer
 }
 
-func NewConsumer(bot *tgbotapi.BotAPI, newsClient news.Client, rknClient rkn.Client, repo *repository.Repository, cfg config.Consumer) *Consumer {
-	return &Consumer{bot: bot, newsClient: newsClient, rknClient: rknClient, repo: repo, cfg: cfg}
+func NewConsumer(bot *tgbotapi.BotAPI, newsClient news.Client, repo *repository.Repository, cfg config.Consumer) *Consumer {
+	return &Consumer{bot: bot, newsClient: newsClient, repo: repo, cfg: cfg}
 }
 
 func (c *Consumer) Start() error {
@@ -59,17 +57,17 @@ func (c *Consumer) Start() error {
 			var linksHash []string
 			message := []string{makeMessageHeader(cat)}
 			for _, article := range catNews {
-				//isForbidden, err := c.rknClient.IsForbidden(article.Url)
-				//if err != nil {
-				//	return err
-				//}
-				//
-				//if isForbidden {
-				//	continue
-				//}
-
 				linkHash := linkHashSum(article.Url)
 				if c.repo.SentNews.IsExists(linkHash) {
+					continue
+				}
+
+				domain, err := parseHost(article.Url)
+				if err != nil {
+					return err
+				}
+
+				if c.repo.DomainBlacklist.IsExists(domain) {
 					continue
 				}
 
