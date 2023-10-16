@@ -59,12 +59,16 @@ func (b *Bot) handleCallbackQuery(callbackQuery *tgbotapi.CallbackQuery) error {
 		return err
 	}
 
-	_, err = b.bot.DeleteMessage(tgbotapi.NewDeleteMessage(callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID))
+	message := callbackQuery.Message
+	buttons, err := b.chatCategoryButtons(message.Chat.ID)
 	if err != nil {
 		return err
 	}
 
-	return b.handleEditCategoryCommand(callbackQuery.Message)
+	msgBut := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, *buttons)
+	_, err = b.bot.Send(msgBut)
+
+	return err
 }
 
 func (b *Bot) chatCategoryButtons(chatId int64) (*tgbotapi.InlineKeyboardMarkup, error) {
