@@ -38,13 +38,13 @@ func main() {
 	rknImport := rkn.NewImport(rknClient, repos, cfg.Import)
 
 	go func() {
-		if err := cnsmr.Start(); err != nil {
+		if err := rknImport.Run(); err != nil {
 			log.Fatal(err)
 		}
 	}()
 
 	go func() {
-		if err := rknImport.Run(); err != nil {
+		if err := cnsmr.Start(); err != nil {
 			log.Fatal(err)
 		}
 	}()

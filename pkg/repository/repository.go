@@ -27,7 +27,7 @@ type SentNews interface {
 type DomainBlacklist interface {
 	Save(domains []string) error
 	IsExists(domain string) bool
-	Clean() error
+	IsEmpty() bool
 }
 
 type Repository struct {

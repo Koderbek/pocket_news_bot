@@ -27,11 +27,11 @@ func (r *SentNewsPostgres) Save(linksHash []string) error {
 }
 
 func (r *SentNewsPostgres) IsExists(linkHash string) bool {
-	var isExists int8
-	query := fmt.Sprintf("SELECT 1 FROM %s WHERE url_hash_sum=$1", sentNewsTable)
+	var isExists bool
+	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE url_hash_sum=$1)", sentNewsTable)
 	err := r.db.Get(&isExists, query, linkHash)
 
-	return err == nil && isExists == 1
+	return err == nil && isExists
 }
 
 func (r *SentNewsPostgres) Clean() error {

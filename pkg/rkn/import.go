@@ -18,13 +18,9 @@ func NewImport(rknClient Client, repo *repository.Repository, cfg config.Import)
 
 func (i *Import) Run() error {
 	for {
-		if time.Now().Hour() != i.cfg.StartHour {
+		if time.Now().Hour() != i.cfg.StartHour && !i.repo.DomainBlacklist.IsEmpty() {
 			time.Sleep(i.cfg.DelayTime * time.Hour)
 			continue
-		}
-
-		if err := i.repo.DomainBlacklist.Clean(); err != nil {
-			return err
 		}
 
 		domains, err := i.rknClient.List()

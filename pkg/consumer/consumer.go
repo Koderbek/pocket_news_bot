@@ -54,6 +54,10 @@ func (c *Consumer) Start() error {
 				return err
 			}
 
+			if len(catNews) == 0 {
+				continue
+			}
+
 			var linksHash []string
 			message := []string{makeMessageHeader(cat)}
 			for _, article := range catNews {
