@@ -41,6 +41,12 @@ type Consumer struct {
 	RequestLimit   int8          `mapstructure:"requestLimit"`
 }
 
+type Import struct {
+	BatchSize int           `mapstructure:"batchSize"`
+	StartHour int           `mapstructure:"startHour"`
+	DelayTime time.Duration `mapstructure:"delayTime"`
+}
+
 type Config struct {
 	TelegramToken string
 	News          News
@@ -48,6 +54,7 @@ type Config struct {
 	Db            Db
 	Messages      Messages
 	Consumer      Consumer
+	Import        Import
 }
 
 func Init() (*Config, error) {
@@ -97,6 +104,10 @@ func unmarshal(cfg *Config) error {
 	}
 
 	if err := viper.UnmarshalKey("consumer", &cfg.Consumer); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("import", &cfg.Import); err != nil {
 		return err
 	}
 

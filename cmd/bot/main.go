@@ -35,7 +35,7 @@ func main() {
 	cnsmr := consumer.NewConsumer(botApi, newsClient, repos, cfg.Consumer)
 
 	rknClient := rkn.NewRoskomsvobodaClient(cfg.Rkn)
-	rknImport := rkn.NewImport(rknClient, repos)
+	rknImport := rkn.NewImport(rknClient, repos, cfg.Import)
 
 	go func() {
 		if err := cnsmr.Start(); err != nil {

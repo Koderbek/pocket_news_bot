@@ -12,6 +12,11 @@ consumer:
   requestLimit: 96
   mailingTimeEnd: 0
 
+import:
+  batchSize: 1000
+  startHour: 2
+  delayTime: 1
+
 db:
   host: "localhost"
   port: "5437"

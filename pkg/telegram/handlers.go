@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"github.com/Koderbek/pocket_news_bot/pkg/model"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"strings"
 )
 
 const (
-	commandStart        = "start"
-	commandEditCategory = "editcategory"
+	commandStart         = "start"
+	commandEditCategory  = "editcategory"
+	messageModifiedError = "message is not modified"
 )
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
@@ -67,6 +69,10 @@ func (b *Bot) handleCallbackQuery(callbackQuery *tgbotapi.CallbackQuery) error {
 
 	msgBut := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, *buttons)
 	_, err = b.bot.Send(msgBut)
+
+	if err != nil && strings.Contains(err.Error(), messageModifiedError) {
+		return nil
+	}
 
 	return err
 }

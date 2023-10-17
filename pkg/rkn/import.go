@@ -1,27 +1,25 @@
 package rkn
 
 import (
+	"github.com/Koderbek/pocket_news_bot/pkg/config"
 	"github.com/Koderbek/pocket_news_bot/pkg/repository"
 	"time"
 )
 
-const batchSize = 1000
-const startHour = 2
-const dailySleep = 1
-
 type Import struct {
 	rknClient Client
 	repo      *repository.Repository
+	cfg       config.Import
 }
 
-func NewImport(rknClient Client, repo *repository.Repository) *Import {
-	return &Import{rknClient: rknClient, repo: repo}
+func NewImport(rknClient Client, repo *repository.Repository, cfg config.Import) *Import {
+	return &Import{rknClient: rknClient, repo: repo, cfg: cfg}
 }
 
 func (i *Import) Run() error {
 	for {
-		if time.Now().Hour() != startHour {
-			time.Sleep(dailySleep * time.Hour)
+		if time.Now().Hour() != i.cfg.StartHour {
+			time.Sleep(i.cfg.DelayTime * time.Hour)
 			continue
 		}
 
@@ -38,7 +36,7 @@ func (i *Import) Run() error {
 		for _, domain := range domains {
 			batch = append(batch, domain)
 
-			if len(batch) == batchSize {
+			if len(batch) == i.cfg.BatchSize {
 				err = i.repo.DomainBlacklist.Save(batch)
 				if err != nil {
 					return err
