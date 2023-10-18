@@ -21,7 +21,7 @@ func (r *CategoryPostgres) GetAll() ([]model.Category, error) {
 	}
 
 	var items []model.Category
-	query := fmt.Sprintf("SELECT * FROM %s", categoryTable)
+	query := fmt.Sprintf("SELECT id, name, code FROM %s ORDER BY last_sent, id", categoryTable)
 	if err := r.db.Select(&items, query); err != nil {
 		return nil, err
 	}
@@ -43,4 +43,11 @@ func (r *CategoryPostgres) GetByCode(code string) (*model.Category, error) {
 	}
 
 	return nil, nil
+}
+
+func (r *CategoryPostgres) UpdateLastSent(code string) error {
+	query := fmt.Sprintf("UPDATE %s SET last_sent = NOW() WHERE code = $1;", categoryTable)
+	_, err := r.db.Exec(query, code)
+
+	return err
 }

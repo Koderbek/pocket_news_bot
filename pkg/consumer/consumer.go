@@ -54,6 +54,10 @@ func (c *Consumer) Start() error {
 				return err
 			}
 
+			if err = c.repo.Category.UpdateLastSent(cat.Code); err != nil {
+				return err
+			}
+
 			if len(catNews) == 0 {
 				continue
 			}
