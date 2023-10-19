@@ -58,10 +58,6 @@ func (c *Consumer) Start() error {
 				return err
 			}
 
-			if len(catNews) == 0 {
-				continue
-			}
-
 			var linksHash []string
 			message := []string{makeMessageHeader(cat)}
 			for _, article := range catNews {
@@ -81,6 +77,10 @@ func (c *Consumer) Start() error {
 
 				linksHash = append(linksHash, linkHash)
 				message = append(message, makeMessage(article))
+			}
+
+			if len(linksHash) == 0 {
+				continue
 			}
 
 			if err = c.sendMessage(cat, strings.Join(message, "\n\n")); err != nil {
