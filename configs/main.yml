@@ -7,8 +7,8 @@ rkn:
   defaultTimeout: 10
 
 consumer:
-  dailySleep: 8
-  categorySleep: 10
+  dailySleep: 6
+  categorySleep: 30
   requestLimit: 96
   mailingTimeEnd: 0
 
