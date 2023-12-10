@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:14.8-alpine
+    volumes:
+      - bot_db:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwerty
+      POSTGRES_DB: postgres
+
+  migration:
+    image: migrate/migrate
+    command: --path=/migrations/ --database="postgres://postgres:qwerty@db:5432/postgres?sslmode=disable" up
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      - db
+
+  bot:
+    build:
+      context: .
+    depends_on:
+      - db
+      - migration
+    environment:
+      TELEGRAM_API_KEY: 6311284489:AAHVUP9yXvnOd525Y9GC5ZXQVGXkKC1KgFE
+      NEWS_API_KEY: 1473a19ae025ba513d2c55ef637e54a3
+      DB_PASSWORD: qwerty
+
+volumes:
+  bot_db:
+    external: true

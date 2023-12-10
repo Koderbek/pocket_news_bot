@@ -37,6 +37,9 @@ func (i *Import) Run() error {
 				if err != nil {
 					return err
 				}
+
+				batch = []string{}
+				time.Sleep(i.cfg.DelayTime * time.Second)
 			}
 		}
 

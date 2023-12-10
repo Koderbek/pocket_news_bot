@@ -14,4 +14,5 @@ VALUES ('general', 'Главное'),
        ('entertainment', 'Развлечения'),
        ('sports', 'Спорт'),
        ('science', 'Наука'),
-       ('health', 'Здоровье');
+       ('health', 'Здоровье')
+    ON CONFLICT (code) DO NOTHING;

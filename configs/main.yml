@@ -18,8 +18,8 @@ import:
   delayTime: 1
 
 db:
-  host: "localhost"
-  port: "5437"
+  host: "db"
+  port: "5432"
   username: "postgres"
   dbname: "postgres"
   sslmode: "disable"

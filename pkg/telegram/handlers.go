@@ -9,6 +9,7 @@ import (
 
 const (
 	commandStart         = "start"
+	commandHelp          = "help"
 	commandEditCategory  = "editcategory"
 	messageModifiedError = "message is not modified"
 )
@@ -16,6 +17,8 @@ const (
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	switch message.Command() {
 	case commandStart:
+		return b.handleStartCommand(message)
+	case commandHelp:
 		return b.handleStartCommand(message)
 	case commandEditCategory:
 		return b.handleEditCategoryCommand(message)
