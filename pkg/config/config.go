@@ -15,12 +15,7 @@ type Messages struct {
 }
 
 type Db struct {
-	Password string
-	Host     string `mapstructure:"host"`
-	Port     string `mapstructure:"port"`
-	Username string `mapstructure:"username"`
-	DBName   string `mapstructure:"dbname"`
-	SSLMode  string `mapstructure:"sslmode"`
+	ConnectionUrl string
 }
 
 type News struct {
@@ -91,10 +86,6 @@ func unmarshal(cfg *Config) error {
 		return err
 	}
 
-	if err := viper.UnmarshalKey("db", &cfg.Db); err != nil {
-		return err
-	}
-
 	if err := viper.UnmarshalKey("news", &cfg.News); err != nil {
 		return err
 	}
@@ -121,7 +112,7 @@ func fromEnv(cfg *Config) error {
 	}
 
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
-	cfg.Db.Password = os.Getenv("DB_PASSWORD")
+	cfg.Db.ConnectionUrl = os.Getenv("DB_CONNECTION")
 	cfg.News.ApiKey = os.Getenv("NEWS_API_KEY")
 
 	return nil
