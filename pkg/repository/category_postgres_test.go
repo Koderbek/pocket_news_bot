@@ -150,7 +150,7 @@ func TestCategoryPostgres_UpdateLastSent(t *testing.T) {
 		mockBehavior func()
 	}{
 		{
-			name:       "case-1: OK",
+			name:       "case-1: valid result",
 			param:      "world",
 			shouldFail: false,
 			mockBehavior: func() {

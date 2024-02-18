@@ -80,5 +80,5 @@ func (r *ChatCategoryPostgres) HasChatCategory(chatId int64, categoryId int8) bo
 	query := fmt.Sprintf("SELECT category_id FROM %s WHERE chat_id=$1 AND category_id=$2", chatCategoryTable)
 	err := r.db.Get(&chatCategory, query, chatId, categoryId)
 
-	return err == nil && chatCategory.CategoryId != 0
+	return err == nil && chatCategory.CategoryId == categoryId
 }
