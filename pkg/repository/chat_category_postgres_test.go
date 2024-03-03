@@ -41,7 +41,7 @@ func TestChatCategoryPostgres_Create(t *testing.T) {
 			},
 		},
 		{
-			name:       "case-1: return error",
+			name:       "case-2: return error",
 			shouldFail: true,
 			param:      paramType{1, 1, "world"},
 			mockBehavior: func() {
@@ -94,7 +94,7 @@ func TestChatCategoryPostgres_Delete(t *testing.T) {
 			},
 		},
 		{
-			name:       "case-1: return error",
+			name:       "case-2: return error",
 			param:      paramType{1, 1},
 			shouldFail: true,
 			mockBehavior: func() {
@@ -153,7 +153,7 @@ func TestChatCategoryPostgres_GetByChatId(t *testing.T) {
 			},
 		},
 		{
-			name:       "case-1: return error",
+			name:       "case-2: return error",
 			param:      1,
 			result:     result,
 			shouldFail: true,
@@ -214,7 +214,7 @@ func TestChatCategoryPostgres_GetByCategoryId(t *testing.T) {
 			},
 		},
 		{
-			name:       "case-1: return error",
+			name:       "case-2: return error",
 			param:      1,
 			result:     result,
 			shouldFail: true,
@@ -272,7 +272,7 @@ func TestChatCategoryPostgres_HasChatCategory(t *testing.T) {
 			},
 		},
 		{
-			name:   "case-1: not found",
+			name:   "case-2: not found",
 			param:  paramType{1, 1},
 			result: false,
 			mockBehavior: func() {
@@ -284,7 +284,7 @@ func TestChatCategoryPostgres_HasChatCategory(t *testing.T) {
 			},
 		},
 		{
-			name:   "case-1: return error",
+			name:   "case-3: return error",
 			param:  paramType{1, 1},
 			result: false,
 			mockBehavior: func() {

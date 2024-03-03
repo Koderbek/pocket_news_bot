@@ -15,6 +15,10 @@ func NewDomainBlacklistPostgres(db *sqlx.DB) *DomainBlacklistPostgres {
 }
 
 func (r *DomainBlacklistPostgres) Save(domains []string) error {
+	if len(domains) == 0 || domains == nil {
+		return nil
+	}
+
 	var values []string
 	for _, domain := range domains {
 		values = append(values, fmt.Sprintf("('%s')", domain))
@@ -31,18 +35,18 @@ func (r *DomainBlacklistPostgres) Save(domains []string) error {
 	return err
 }
 
-func (r *DomainBlacklistPostgres) IsExists(domain string) bool {
-	var isExists bool
-	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE domain=$1)", domainBlacklistTable)
-	err := r.db.Get(&isExists, query, domain)
+func (r *DomainBlacklistPostgres) IsExists(searchDomain string) bool {
+	var domain string
+	query := fmt.Sprintf("SELECT domain FROM %s WHERE domain=$1", domainBlacklistTable)
+	err := r.db.Get(&domain, query, searchDomain)
 
-	return err == nil && isExists
+	return err == nil && domain == searchDomain
 }
 
 func (r *DomainBlacklistPostgres) IsEmpty() bool {
-	var exists bool
-	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s);", domainBlacklistTable)
-	err := r.db.Get(&exists, query)
+	var val int8
+	query := fmt.Sprintf("SELECT 1 val FROM %s LIMIT 1;", domainBlacklistTable)
+	err := r.db.Get(&val, query)
 
-	return err == nil && !exists
+	return err == nil && val != 1
 }
