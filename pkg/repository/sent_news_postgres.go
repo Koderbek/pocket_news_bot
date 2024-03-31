@@ -15,6 +15,10 @@ func NewSentNewsPostgres(db *sqlx.DB) *SentNewsPostgres {
 }
 
 func (r *SentNewsPostgres) Save(linksHash []string) error {
+	if len(linksHash) == 0 || linksHash == nil {
+		return nil
+	}
+
 	var values []string
 	for _, hash := range linksHash {
 		values = append(values, fmt.Sprintf("('%s')", hash))
@@ -27,11 +31,11 @@ func (r *SentNewsPostgres) Save(linksHash []string) error {
 }
 
 func (r *SentNewsPostgres) IsExists(linkHash string) bool {
-	var isExists bool
-	query := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE url_hash_sum=$1)", sentNewsTable)
-	err := r.db.Get(&isExists, query, linkHash)
+	var result string
+	query := fmt.Sprintf("SELECT url_hash_sum FROM %s WHERE url_hash_sum=$1", sentNewsTable)
+	err := r.db.Get(&result, query, linkHash)
 
-	return err == nil && isExists
+	return err == nil && result == linkHash
 }
 
 func (r *SentNewsPostgres) Clean() error {

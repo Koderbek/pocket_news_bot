@@ -9,14 +9,14 @@ import (
 	"testing"
 )
 
-func TestDomainBlacklistPostgres_Save(t *testing.T) {
+func TestSentNewsPostgres_Save(t *testing.T) {
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer db.Close()
-	r := NewDomainBlacklistPostgres(db)
+	r := NewSentNewsPostgres(db)
 	testCases := []struct {
 		name         string
 		param        []string
@@ -26,18 +26,18 @@ func TestDomainBlacklistPostgres_Save(t *testing.T) {
 		{
 			name:       "case-1: valid result",
 			shouldFail: false,
-			param:      []string{"test_1.ru", "test_2.ru"},
+			param:      []string{"test1111", "test2222"},
 			mockBehavior: func() {
-				query := fmt.Sprintf("INSERT INTO %s", domainBlacklistTable)
+				query := fmt.Sprintf("INSERT INTO %s", sentNewsTable)
 				mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 			},
 		},
 		{
 			name:       "case-2: return error",
 			shouldFail: true,
-			param:      []string{"test_1.ru", "test_2.ru"},
+			param:      []string{"test1111", "test2222"},
 			mockBehavior: func() {
-				query := fmt.Sprintf("INSERT INTO %s", domainBlacklistTable)
+				query := fmt.Sprintf("INSERT INTO %s", sentNewsTable)
 				mock.ExpectExec(query).WillReturnError(errors.New("return error"))
 			},
 		},
@@ -62,47 +62,47 @@ func TestDomainBlacklistPostgres_Save(t *testing.T) {
 	}
 }
 
-func TestDomainBlacklistPostgres_IsExists(t *testing.T) {
+func TestSentNewsPostgres_IsExists(t *testing.T) {
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer db.Close()
-	r := NewDomainBlacklistPostgres(db)
+	r := NewSentNewsPostgres(db)
 	testCases := []struct {
 		name         string
 		param        string
 		result       bool
-		mockBehavior func(searchDomain string)
+		mockBehavior func(linkHash string)
 	}{
 		{
 			name:   "case-1: find",
-			param:  "test_1.ru",
+			param:  "test1111",
 			result: true,
-			mockBehavior: func(searchDomain string) {
-				query := fmt.Sprintf("SELECT domain FROM %s", domainBlacklistTable)
-				rows := sqlmock.NewRows([]string{"domain"}).AddRow(searchDomain)
+			mockBehavior: func(linkHash string) {
+				query := fmt.Sprintf("SELECT url_hash_sum FROM %s", sentNewsTable)
+				rows := sqlmock.NewRows([]string{"url_hash_sum"}).AddRow(linkHash)
 
 				mock.ExpectQuery(query).WillReturnRows(rows)
 			},
 		},
 		{
 			name:   "case-2: not found",
-			param:  "test_2.ru",
+			param:  "test2222",
 			result: false,
-			mockBehavior: func(searchDomain string) {
-				query := fmt.Sprintf("SELECT domain FROM %s", domainBlacklistTable)
-				rows := sqlmock.NewRows([]string{"domain"}).AddRow("")
+			mockBehavior: func(linkHash string) {
+				query := fmt.Sprintf("SELECT url_hash_sum FROM %s", sentNewsTable)
+				rows := sqlmock.NewRows([]string{"url_hash_sum"}).AddRow("")
 				mock.ExpectQuery(query).WillReturnRows(rows)
 			},
 		},
 		{
 			name:   "case-3: return error",
-			param:  "test_3.ru",
+			param:  "test2222",
 			result: false,
-			mockBehavior: func(searchDomain string) {
-				query := fmt.Sprintf("SELECT domain FROM %s", domainBlacklistTable)
+			mockBehavior: func(linkHash string) {
+				query := fmt.Sprintf("SELECT url_hash_sum FROM %s", sentNewsTable)
 				mock.ExpectQuery(query).WillReturnError(errors.New("return error"))
 			},
 		},
@@ -117,43 +117,33 @@ func TestDomainBlacklistPostgres_IsExists(t *testing.T) {
 	}
 }
 
-func TestDomainBlacklistPostgres_IsEmpty(t *testing.T) {
+func TestSentNewsPostgres_Clean(t *testing.T) {
 	db, mock, err := sqlmock.Newx()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer db.Close()
-	r := NewDomainBlacklistPostgres(db)
+	r := NewSentNewsPostgres(db)
 	testCases := []struct {
 		name         string
-		result       bool
+		shouldFail   bool
 		mockBehavior func()
 	}{
 		{
-			name:   "case-1: empty",
-			result: true,
+			name:       "case-1: valid result",
+			shouldFail: false,
 			mockBehavior: func() {
-				query := fmt.Sprintf("SELECT 1 val FROM %s LIMIT 1;", domainBlacklistTable)
-				rows := sqlmock.NewRows([]string{"val"}).AddRow(0)
-				mock.ExpectQuery(query).WillReturnRows(rows)
+				query := fmt.Sprintf("TRUNCATE %s", sentNewsTable)
+				mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 			},
 		},
 		{
-			name:   "case-2: not empty",
-			result: false,
+			name:       "case-2: return error",
+			shouldFail: true,
 			mockBehavior: func() {
-				query := fmt.Sprintf("SELECT 1 val FROM %s LIMIT 1;", domainBlacklistTable)
-				rows := sqlmock.NewRows([]string{"val"}).AddRow(1)
-				mock.ExpectQuery(query).WillReturnRows(rows)
-			},
-		},
-		{
-			name:   "case-3: return error",
-			result: false,
-			mockBehavior: func() {
-				query := fmt.Sprintf("SELECT 1 val FROM %s LIMIT 1;", domainBlacklistTable)
-				mock.ExpectQuery(query).WillReturnError(errors.New("return error"))
+				query := fmt.Sprintf("TRUNCATE %s", sentNewsTable)
+				mock.ExpectExec(query).WillReturnError(errors.New("return error"))
 			},
 		},
 	}
@@ -161,8 +151,12 @@ func TestDomainBlacklistPostgres_IsEmpty(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.mockBehavior()
-			got := r.IsEmpty()
-			assert.Equal(t, tc.result, got)
+			err := r.Clean()
+			if tc.shouldFail {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 		})
 	}
 }
