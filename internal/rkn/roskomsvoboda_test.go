@@ -2,7 +2,7 @@ package rkn
 
 import (
 	"bytes"
-	"github.com/Koderbek/pocket_news_bot/pkg/config"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"

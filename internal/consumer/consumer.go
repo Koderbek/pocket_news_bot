@@ -1,10 +1,10 @@
 package consumer
 
 import (
-	"github.com/Koderbek/pocket_news_bot/pkg/config"
-	"github.com/Koderbek/pocket_news_bot/pkg/model"
-	"github.com/Koderbek/pocket_news_bot/pkg/news"
-	"github.com/Koderbek/pocket_news_bot/pkg/repository"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
+	"github.com/Koderbek/pocket_news_bot/internal/model"
+	"github.com/Koderbek/pocket_news_bot/internal/news"
+	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strings"
 	"time"

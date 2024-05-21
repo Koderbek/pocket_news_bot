@@ -3,7 +3,7 @@ package consumer
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/Koderbek/pocket_news_bot/pkg/model"
+	"github.com/Koderbek/pocket_news_bot/internal/model"
 	"net/url"
 )
 

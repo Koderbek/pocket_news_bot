@@ -1,8 +1,8 @@
 package rkn
 
 import (
-	"github.com/Koderbek/pocket_news_bot/pkg/config"
-	"github.com/Koderbek/pocket_news_bot/pkg/repository"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
+	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	"time"
 )
 

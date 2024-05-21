@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/Koderbek/pocket_news_bot/pkg/model"
+	"github.com/Koderbek/pocket_news_bot/internal/model"
 	"github.com/jmoiron/sqlx"
 )
 

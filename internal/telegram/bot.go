@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"github.com/Koderbek/pocket_news_bot/pkg/config"
-	"github.com/Koderbek/pocket_news_bot/pkg/repository"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
+	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 

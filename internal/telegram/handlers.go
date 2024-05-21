@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"fmt"
-	"github.com/Koderbek/pocket_news_bot/pkg/model"
+	"github.com/Koderbek/pocket_news_bot/internal/model"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strings"
 )

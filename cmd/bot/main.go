@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/Koderbek/pocket_news_bot/pkg/config"
-	"github.com/Koderbek/pocket_news_bot/pkg/consumer"
-	"github.com/Koderbek/pocket_news_bot/pkg/news"
-	"github.com/Koderbek/pocket_news_bot/pkg/repository"
-	"github.com/Koderbek/pocket_news_bot/pkg/rkn"
-	"github.com/Koderbek/pocket_news_bot/pkg/telegram"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
+	"github.com/Koderbek/pocket_news_bot/internal/consumer"
+	"github.com/Koderbek/pocket_news_bot/internal/news"
+	"github.com/Koderbek/pocket_news_bot/internal/repository"
+	"github.com/Koderbek/pocket_news_bot/internal/rkn"
+	"github.com/Koderbek/pocket_news_bot/internal/telegram"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 )

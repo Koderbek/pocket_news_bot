@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Koderbek/pocket_news_bot/pkg/config"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
 	"io/ioutil"
 	"net/http"
 	"time"

@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"github.com/Koderbek/pocket_news_bot/pkg/model"
+	"github.com/Koderbek/pocket_news_bot/internal/model"
 	"github.com/stretchr/testify/assert"
 	sqlmock "github.com/zhashkevych/go-sqlxmock"
 	"log"
