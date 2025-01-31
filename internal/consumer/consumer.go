@@ -29,6 +29,7 @@ func NewConsumer(bot *tgbotapi.BotAPI, newsClient news.Client, repo *repository.
 func (c *Consumer) Start() error {
 	var requestCount int8 = 0
 	for {
+		//TODO: Чистка таблицы sent_news - вынести в отдельную консольную команду
 		if time.Now().Hour() == c.cfg.MailingTimeEnd || requestCount > c.cfg.RequestLimit {
 			//Новый день. Чистим таблицу sent_news
 			if err := c.repo.SentNews.Clean(); err != nil {
@@ -38,7 +39,7 @@ func (c *Consumer) Start() error {
 			time.Sleep(c.cfg.DailySleep * time.Hour)
 		}
 
-		categories, err := c.repo.Category.GetAll()
+		categories, err := c.repo.Category.GetAll() //Получаем все категории из category
 		if err != nil {
 			return err
 		}
@@ -63,6 +64,7 @@ func (c *Consumer) Start() error {
 			for _, article := range catNews {
 				linkHash := linkHashSum(article.Url)
 				if c.repo.SentNews.IsExists(linkHash) {
+					//Если новость отправляли ранее, то скипаем ее
 					continue
 				}
 
@@ -72,6 +74,7 @@ func (c *Consumer) Start() error {
 				}
 
 				if c.repo.DomainBlacklist.IsExists(domain) {
+					//Проверяем наличие ресурса среди запрещенных
 					continue
 				}
 
@@ -80,17 +83,21 @@ func (c *Consumer) Start() error {
 			}
 
 			if len(linksHash) == 0 {
+				//Если отправлять нечего, то скрипаем
 				continue
 			}
 
+			//Отправляем сообщение пользователям
 			if err = c.sendMessage(cat, strings.Join(message, "\n\n")); err != nil {
 				return err
 			}
 
+			//Сохраняем хэш отправленных сообщений
 			if err = c.repo.SentNews.Save(linksHash); err != nil {
 				return err
 			}
 
+			//Пауза на 30 минут
 			time.Sleep(c.cfg.CategorySleep * time.Minute)
 		}
 	}
@@ -102,7 +109,7 @@ func (c *Consumer) sendMessage(cat model.Category, messageText string) error {
 		return err
 	}
 
-	//Отправка сообщений пользователям с данной категорией
+	//Асинхронная отправка сообщений пользователям с данной категорией
 	for _, chatCategory := range chatCategories {
 		go func(chatId int64) {
 			msg := tgbotapi.NewMessage(chatId, messageText)

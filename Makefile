@@ -3,14 +3,29 @@
 include .env
 export
 
-build:
+build_bot:
+	mkdir -p ./.bin
+	echo "Building bot..."
 	go build -o ./.bin/bot cmd/bot/main.go
+	chmod +x ./.bin/bot
 
-run: build
+run_bot: build_bot
+	echo "Running bot..."
 	./.bin/bot
 
+build_import:
+	mkdir -p ./.bin
+	echo "Building import_blocked_resources..."
+	go build -o ./.bin/import_blocked_resources cmd/import_blocked_resources/main.go
+	chmod +x ./.bin/import_blocked_resources
+
+run_import: build_import
+	echo "Running import_blocked_resources..."
+	./.bin/import_blocked_resources
+
 compose_up:
-	docker-compose up > cliInput.log
+	docker compose build
+	docker compose up > cliInput.log
 
 test_db_run:
 	docker run --name=news_bot_db -e POSTGRES_PASSWORD='${POSTGRES_PASSWORD}' -p 5432:5432 -d postgres:14.8-alpine

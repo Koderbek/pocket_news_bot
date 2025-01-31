@@ -23,7 +23,7 @@ services:
       - postgres_db
 
   bot:
-    restart: always
+    restart: "no"
     build:
       context: .
     env_file:

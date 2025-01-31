@@ -5,7 +5,6 @@ import (
 	"github.com/Koderbek/pocket_news_bot/internal/consumer"
 	"github.com/Koderbek/pocket_news_bot/internal/news"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
-	"github.com/Koderbek/pocket_news_bot/internal/rkn"
 	"github.com/Koderbek/pocket_news_bot/internal/telegram"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
@@ -33,15 +32,6 @@ func main() {
 
 	newsClient := news.NewGNewsClient(repos, cfg.News)
 	cnsmr := consumer.NewConsumer(botApi, newsClient, repos, cfg.Consumer)
-
-	rknClient := rkn.NewRoskomsvobodaClient(cfg.Rkn)
-	rknImport := rkn.NewImport(rknClient, repos, cfg.Import)
-
-	go func() {
-		if err := rknImport.Run(); err != nil {
-			log.Fatal(err)
-		}
-	}()
 
 	go func() {
 		if err := cnsmr.Start(); err != nil {

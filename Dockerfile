@@ -4,6 +4,7 @@ ENV TZ Europe/Moscow
 RUN apk add --update --no-cache make tzdata
 
 WORKDIR /usr/local/src
-COPY . .
+RUN mkdir -p ./.bin && chmod -R 777 ./.bin
+COPY --chown=1000:1000 . .
 
-CMD ["make", "run"]
+CMD ["sh", "-c", "make run_import & make run_bot"]
