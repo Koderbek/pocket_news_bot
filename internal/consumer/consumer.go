@@ -27,83 +27,70 @@ func NewConsumer(bot *tgbotapi.BotAPI, newsClient news.Client, repo *repository.
 }
 
 func (c *Consumer) Start() error {
-	var requestCount int8 = 0
-	for {
-		//TODO: Чистка таблицы sent_news - вынести в отдельную консольную команду
-		if time.Now().Hour() == c.cfg.MailingTimeEnd || requestCount > c.cfg.RequestLimit {
-			//Новый день. Чистим таблицу sent_news
-			if err := c.repo.SentNews.Clean(); err != nil {
-				return err
-			}
+	if time.Now().Hour() >= c.cfg.MailingTimeEnd && time.Now().Hour() < c.cfg.MailingTimeStart {
+		return nil
+	}
 
-			time.Sleep(c.cfg.DailySleep * time.Hour)
+	cat, err := c.repo.Category.ForSending()
+	if err != nil {
+		return err
+	}
+
+	if cat == nil {
+		return nil
+	}
+
+	//TODO: Заменить источник новостей
+	catNews, err := c.newsClient.GetNews(cat.Code)
+	if err != nil {
+		return err
+	}
+
+	if err = c.repo.Category.UpdateLastSent(cat.Code); err != nil {
+		return err
+	}
+
+	var linksHash []string
+	message := []string{makeMessageHeader(cat)}
+	for _, article := range catNews {
+		linkHash := linkHashSum(article.Url)
+		if c.repo.SentNews.IsExists(linkHash) {
+			//Если новость отправляли ранее, то скипаем ее
+			continue
 		}
 
-		categories, err := c.repo.Category.GetAll() //Получаем все категории из category
+		domain, err := parseHost(article.Url)
 		if err != nil {
 			return err
 		}
 
-		for _, cat := range categories {
-			requestCount++
-			if requestCount > c.cfg.RequestLimit {
-				break
-			}
-
-			catNews, err := c.newsClient.GetNews(cat.Code)
-			if err != nil {
-				return err
-			}
-
-			if err = c.repo.Category.UpdateLastSent(cat.Code); err != nil {
-				return err
-			}
-
-			var linksHash []string
-			message := []string{makeMessageHeader(cat)}
-			for _, article := range catNews {
-				linkHash := linkHashSum(article.Url)
-				if c.repo.SentNews.IsExists(linkHash) {
-					//Если новость отправляли ранее, то скипаем ее
-					continue
-				}
-
-				domain, err := parseHost(article.Url)
-				if err != nil {
-					return err
-				}
-
-				if c.repo.DomainBlacklist.IsExists(domain) {
-					//Проверяем наличие ресурса среди запрещенных
-					continue
-				}
-
-				linksHash = append(linksHash, linkHash)
-				message = append(message, makeMessage(article))
-			}
-
-			if len(linksHash) == 0 {
-				//Если отправлять нечего, то скрипаем
-				continue
-			}
-
-			//Отправляем сообщение пользователям
-			if err = c.sendMessage(cat, strings.Join(message, "\n\n")); err != nil {
-				return err
-			}
-
-			//Сохраняем хэш отправленных сообщений
-			if err = c.repo.SentNews.Save(linksHash); err != nil {
-				return err
-			}
-
-			//Пауза на 30 минут
-			time.Sleep(c.cfg.CategorySleep * time.Minute)
+		if c.repo.DomainBlacklist.IsExists(domain) {
+			//Проверяем наличие ресурса среди запрещенных
+			continue
 		}
+
+		linksHash = append(linksHash, linkHash)
+		message = append(message, makeMessage(article))
 	}
+
+	if len(linksHash) == 0 {
+		return nil
+	}
+
+	//Отправляем сообщение пользователям
+	if err = c.sendMessage(cat, strings.Join(message, "\n\n")); err != nil {
+		return err
+	}
+
+	//Сохраняем хэш отправленных сообщений
+	if err = c.repo.SentNews.Save(linksHash); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Consumer) sendMessage(cat model.Category, messageText string) error {
+func (c *Consumer) sendMessage(cat *model.Category, messageText string) error {
 	chatCategories, err := c.repo.ChatCategory.GetByCategoryId(cat.Id)
 	if err != nil {
 		return err

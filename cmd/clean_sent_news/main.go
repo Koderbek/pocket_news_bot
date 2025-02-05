@@ -4,13 +4,11 @@ import (
 	"github.com/Koderbek/pocket_news_bot/internal/config"
 	logger2 "github.com/Koderbek/pocket_news_bot/internal/logger"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
-	"github.com/Koderbek/pocket_news_bot/internal/telegram"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 )
 
 func main() {
-	logger, err := logger2.Init("bot.log")
+	logger, err := logger2.Init("clean_sent_news.log")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,14 +24,9 @@ func main() {
 	}
 
 	repos := repository.NewPostgresRepository(db)
-	botApi, err := tgbotapi.NewBotAPI(cfg.TelegramToken)
-	if err != nil {
+	if err := repos.SentNews.Clean(); err != nil {
 		logger.Fatal(err)
-	}
-
-	botApi.Debug = true
-	bot := telegram.NewBot(botApi, repos, cfg.Messages)
-	if err := bot.Start(); err != nil {
-		logger.Fatal(err)
+	} else {
+		logger.Println("[SUCCESS] Clean sent_news is completed")
 	}
 }

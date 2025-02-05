@@ -58,7 +58,7 @@ func TestMakeMessageHeader(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		res := makeMessageHeader(tc.param)
+		res := makeMessageHeader(&tc.param)
 		require.Equal(t, tc.result, res)
 	}
 }

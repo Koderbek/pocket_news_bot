@@ -7,10 +7,10 @@ rkn:
   defaultTimeout: 10
 
 consumer:
-  dailySleep: 6
   categorySleep: 30
   requestLimit: 96
   mailingTimeEnd: 0
+  mailingTimeStart: 7
 
 import:
   batchSize: 1000

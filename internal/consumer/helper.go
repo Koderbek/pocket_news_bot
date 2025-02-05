@@ -11,7 +11,7 @@ func makeMessage(article model.Article) string {
 	return fmt.Sprintf("<b>%s</b>\n<i>%s</i>\n<a href=\"%s\">Читать в источнике</a>", article.Title, article.Description, article.Url)
 }
 
-func makeMessageHeader(category model.Category) string {
+func makeMessageHeader(category *model.Category) string {
 	return fmt.Sprintf("<a href=\"%s\">%s</a> | #%s", botUrl, botName, category.Name)
 }
 

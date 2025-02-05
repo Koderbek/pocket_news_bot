@@ -30,10 +30,10 @@ type Rkn struct {
 }
 
 type Consumer struct {
-	MailingTimeEnd int           `mapstructure:"mailingTimeEnd"`
-	DailySleep     time.Duration `mapstructure:"dailySleep"`
-	CategorySleep  time.Duration `mapstructure:"categorySleep"`
-	RequestLimit   int8          `mapstructure:"requestLimit"`
+	MailingTimeEnd   int           `mapstructure:"mailingTimeEnd"`
+	MailingTimeStart int           `mapstructure:"mailingTimeStart"`
+	CategorySleep    time.Duration `mapstructure:"categorySleep"`
+	RequestLimit     int8          `mapstructure:"requestLimit"`
 }
 
 type Import struct {

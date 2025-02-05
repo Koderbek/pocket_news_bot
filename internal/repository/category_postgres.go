@@ -45,6 +45,20 @@ func (r *CategoryPostgres) GetByCode(code string) (*model.Category, error) {
 	return nil, nil
 }
 
+// TODO: Покрыть тестами
+func (r *CategoryPostgres) ForSending() (*model.Category, error) {
+	categories, err := r.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(categories) > 0 {
+		return &categories[0], nil
+	}
+
+	return nil, nil
+}
+
 func (r *CategoryPostgres) UpdateLastSent(code string) error {
 	query := fmt.Sprintf("UPDATE %s SET last_sent = NOW() WHERE code = $1;", categoryTable)
 	_, err := r.db.Exec(query, code)

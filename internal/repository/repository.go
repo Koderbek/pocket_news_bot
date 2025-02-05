@@ -8,6 +8,7 @@ import (
 type Category interface {
 	GetAll() ([]model.Category, error)
 	GetByCode(code string) (*model.Category, error)
+	ForSending() (*model.Category, error)
 	UpdateLastSent(code string) error
 }
 
