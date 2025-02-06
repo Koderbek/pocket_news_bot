@@ -1,10 +1,10 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
+	"fmt"
 	"github.com/spf13/viper"
-	"log"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -71,7 +71,16 @@ func Init() (*Config, error) {
 }
 
 func setUpViper() error {
-	viper.AddConfigPath("configs")
+	// Получаем абсолютный путь к исполняемому файлу (message_sender)
+	execPath, err := os.Executable()
+	if err != nil {
+		return fmt.Errorf("failed to get executable path: %w", err)
+	}
+
+	// Определяем директорию, в которой лежит бинарник (обычно это .bin/)
+	execDir := filepath.Dir(execPath)
+	configPath := filepath.Join(execDir, "../configs") // Поднимаемся из .bin/ в корень, затем заходим в configs
+	viper.AddConfigPath(configPath)
 	viper.SetConfigName("main")
 
 	return viper.ReadInConfig()
@@ -106,11 +115,6 @@ func unmarshal(cfg *Config) error {
 }
 
 func fromEnv(cfg *Config) error {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
 	cfg.Db.ConnectionUrl = os.Getenv("DB_CONNECTION")
 	cfg.News.ApiKey = os.Getenv("NEWS_API_KEY")

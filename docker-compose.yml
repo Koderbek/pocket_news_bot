@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 
 services:
   postgres_db:
@@ -10,6 +10,11 @@ services:
       - "5432:5432"
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      retries: 5
+      timeout: 3s
 
   migration:
     image: migrate/migrate
@@ -20,7 +25,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
 
   bot:
     restart: "no"
@@ -29,8 +35,10 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres_db
-      - migration
+      postgres_db:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
 
 volumes:
   bot_db:
