@@ -13,6 +13,8 @@ func Init(logFile string) (*log.Logger, error) {
 		return nil, err
 	}
 
+	defer file.Close()
+
 	// Логирование и в файл, и в консоль
 	multiWriter := io.MultiWriter(os.Stdout, file)
 	logger := log.New(multiWriter, "", log.LstdFlags|log.Lshortfile)
