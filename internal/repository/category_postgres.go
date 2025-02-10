@@ -45,7 +45,6 @@ func (r *CategoryPostgres) GetByCode(code string) (*model.Category, error) {
 	return nil, nil
 }
 
-// TODO: Покрыть тестами
 func (r *CategoryPostgres) ForSending() (*model.Category, error) {
 	categories, err := r.GetAll()
 	if err != nil {

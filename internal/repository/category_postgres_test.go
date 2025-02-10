@@ -181,3 +181,65 @@ func TestCategoryPostgres_UpdateLastSent(t *testing.T) {
 		})
 	}
 }
+
+func TestCategoryPostgres_ForSending(t *testing.T) {
+	db, mock, err := sqlmock.Newx()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+
+	r := NewCategoryPostgres(db)
+	testCases := []struct {
+		name         string
+		result       *model.Category
+		shouldFail   bool
+		mockBehavior func(category *model.Category)
+	}{
+		{
+			name:       "case-3: empty result",
+			result:     nil,
+			shouldFail: false,
+			mockBehavior: func(category *model.Category) {
+				query := fmt.Sprintf("SELECT id, name, code FROM %s ORDER BY last_sent, id", categoryTable)
+				rows := sqlmock.NewRows([]string{"id", "name", "code"})
+
+				mock.ExpectQuery(query).WillReturnRows(rows)
+			},
+		},
+		{
+			name:       "case-1: return error",
+			result:     &model.Category{Id: 1, Name: "Главное", Code: "general"},
+			shouldFail: true,
+			mockBehavior: func(category *model.Category) {
+				query := fmt.Sprintf("SELECT id, name, code FROM %s ORDER BY last_sent, id", categoryTable)
+				mock.ExpectQuery(query).WillReturnError(errors.New("return error"))
+			},
+		},
+		{
+			name:       "case-2: valid result",
+			result:     &model.Category{Id: 1, Name: "Главное", Code: "general"},
+			shouldFail: false,
+			mockBehavior: func(category *model.Category) {
+				query := fmt.Sprintf("SELECT id, name, code FROM %s ORDER BY last_sent, id", categoryTable)
+				rows := sqlmock.NewRows([]string{"id", "name", "code"}).AddRow(category.Id, category.Name, category.Code)
+
+				mock.ExpectQuery(query).WillReturnRows(rows)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.mockBehavior(tc.result)
+			got, err := r.ForSending()
+			if tc.shouldFail {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.result, got)
+			}
+		})
+	}
+}
