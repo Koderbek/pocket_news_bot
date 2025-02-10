@@ -43,6 +43,9 @@ compose_up:
 	docker compose build
 	docker compose up > cliInput.log
 
+run_test:
+	go test ./...
+
 test_db_run:
 	docker run --name=news_bot_db -e POSTGRES_PASSWORD='${POSTGRES_PASSWORD}' -p 5432:5432 -d postgres:14.8-alpine
 

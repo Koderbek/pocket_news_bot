@@ -1,4 +1,4 @@
-package consumer
+package message_sender
 
 import (
 	"github.com/Koderbek/pocket_news_bot/internal/config"
@@ -15,18 +15,18 @@ const (
 	botName = "🗞Pocket News"
 )
 
-type Consumer struct {
+type Sender struct {
 	bot        *tgbotapi.BotAPI
 	newsClient news.Client
 	repo       *repository.Repository
-	cfg        config.Consumer
+	cfg        config.MessageSender
 }
 
-func NewConsumer(bot *tgbotapi.BotAPI, newsClient news.Client, repo *repository.Repository, cfg config.Consumer) *Consumer {
-	return &Consumer{bot: bot, newsClient: newsClient, repo: repo, cfg: cfg}
+func NewSender(bot *tgbotapi.BotAPI, newsClient news.Client, repo *repository.Repository, cfg config.MessageSender) *Sender {
+	return &Sender{bot: bot, newsClient: newsClient, repo: repo, cfg: cfg}
 }
 
-func (c *Consumer) Start() error {
+func (c *Sender) Start() error {
 	if time.Now().Hour() >= c.cfg.MailingTimeEnd && time.Now().Hour() < c.cfg.MailingTimeStart {
 		return nil
 	}
@@ -90,7 +90,7 @@ func (c *Consumer) Start() error {
 	return nil
 }
 
-func (c *Consumer) sendMessage(cat *model.Category, messageText string) error {
+func (c *Sender) sendMessage(cat *model.Category, messageText string) error {
 	chatCategories, err := c.repo.ChatCategory.GetByCategoryId(cat.Id)
 	if err != nil {
 		return err

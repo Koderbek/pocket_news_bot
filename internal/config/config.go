@@ -10,8 +10,8 @@ import (
 
 type Messages struct {
 	Start          string `mapstructure:"start"`
-	EditCategory   string `mapstructure:"edit_category"`
-	UnknownCommand string `mapstructure:"unknown_command"`
+	EditCategory   string `mapstructure:"editCategory"`
+	UnknownCommand string `mapstructure:"unknownCommand"`
 }
 
 type Db struct {
@@ -29,7 +29,7 @@ type Rkn struct {
 	DefaultTimeout time.Duration `mapstructure:"defaultTimeout"`
 }
 
-type Consumer struct {
+type MessageSender struct {
 	MailingTimeEnd   int           `mapstructure:"mailingTimeEnd"`
 	MailingTimeStart int           `mapstructure:"mailingTimeStart"`
 	CategorySleep    time.Duration `mapstructure:"categorySleep"`
@@ -48,7 +48,7 @@ type Config struct {
 	Rkn           Rkn
 	Db            Db
 	Messages      Messages
-	Consumer      Consumer
+	MessageSender MessageSender
 	Import        Import
 }
 
@@ -103,7 +103,7 @@ func unmarshal(cfg *Config) error {
 		return err
 	}
 
-	if err := viper.UnmarshalKey("consumer", &cfg.Consumer); err != nil {
+	if err := viper.UnmarshalKey("messageSender", &cfg.MessageSender); err != nil {
 		return err
 	}
 

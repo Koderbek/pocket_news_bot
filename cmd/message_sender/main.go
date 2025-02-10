@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/Koderbek/pocket_news_bot/internal/config"
-	"github.com/Koderbek/pocket_news_bot/internal/consumer"
 	logger2 "github.com/Koderbek/pocket_news_bot/internal/logger"
+	"github.com/Koderbek/pocket_news_bot/internal/message_sender"
 	"github.com/Koderbek/pocket_news_bot/internal/news"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -33,8 +33,8 @@ func main() {
 	}
 
 	newsClient := news.NewGNewsClient(repos, cfg.News)
-	cnsmr := consumer.NewConsumer(botApi, newsClient, repos, cfg.Consumer)
-	if err := cnsmr.Start(); err != nil {
+	sender := message_sender.NewSender(botApi, newsClient, repos, cfg.MessageSender)
+	if err := sender.Start(); err != nil {
 		logger.Fatal(err)
 	} else {
 		logger.Println("[SUCCESS] Sending is completed")
