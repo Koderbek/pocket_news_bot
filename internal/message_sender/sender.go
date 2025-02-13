@@ -40,7 +40,6 @@ func (c *Sender) Start() error {
 		return nil
 	}
 
-	//TODO: Заменить источник новостей
 	catNews, err := c.newsClient.GetNews(cat.Code)
 	if err != nil {
 		return err
