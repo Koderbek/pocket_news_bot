@@ -28,15 +28,18 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
-	startMessage := fmt.Sprintf(b.messages.Start, "/"+commandEditCategory)
+	startMessage := fmt.Sprintf(b.messages.StartCommand, "/"+commandEditCategory)
 	msg := tgbotapi.NewMessage(message.Chat.ID, startMessage)
 	_, err := b.bot.Send(msg)
 
 	return err
 }
 
+// TODO: Логи при остановке бота
+// 2025/02/14 10:42:28 getUpdates resp: [{UpdateID:16129341 Message:<nil> EditedMessage:<nil> ChannelPost:<nil> EditedChannelPost:<nil> InlineQuery:<nil> ChosenInlineResult:<nil> CallbackQuery:<nil> ShippingQuery:<nil> PreCheckoutQuery:<nil>}]
+// 2025/02/14 10:43:48 getUpdates resp: [{UpdateID:16129344 Message:<nil> EditedMessage:<nil> ChannelPost:<nil> EditedChannelPost:<nil> InlineQuery:<nil> ChosenInlineResult:<nil> CallbackQuery:<nil> ShippingQuery:<nil> PreCheckoutQuery:<nil>}]
 func (b *Bot) handleEditCategoryCommand(message *tgbotapi.Message) error {
-	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.EditCategory)
+	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.EditCategoryCommand)
 	resMsg, err := b.bot.Send(msg)
 	if err != nil {
 		return err

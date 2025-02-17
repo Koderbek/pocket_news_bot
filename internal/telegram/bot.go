@@ -4,6 +4,7 @@ import (
 	"github.com/Koderbek/pocket_news_bot/internal/config"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"time"
 )
 
 type Bot struct {
@@ -29,21 +30,32 @@ func (b *Bot) Start() error {
 		return err
 	}
 
+	// Создаем rate limiter: максимум 5 запросов в 10 секунд
+	rateLimiter := NewUserRateLimiter(b.messages.RateLimit, b.messages.RateLimitInterval*time.Second)
 	for update := range updates {
+		var msg *tgbotapi.Message
 		if update.CallbackQuery != nil {
-			if err := b.handleCallbackQuery(update.CallbackQuery); err != nil {
-				return err
-			}
+			msg = update.CallbackQuery.Message
+		} else {
+			msg = update.Message
+		}
+
+		// Проверяем, не превышен ли лимит запросов
+		if msg != nil && !rateLimiter.Allow(msg.From.ID) {
+			msgCfg := tgbotapi.NewMessage(msg.Chat.ID, b.messages.ManyRequestsCommand)
+			b.bot.Send(msgCfg)
 
 			continue
 		}
 
-		if update.Message != nil {
+		if update.CallbackQuery != nil {
+			if err := b.handleCallbackQuery(update.CallbackQuery); err != nil {
+				return err
+			}
+		} else if update.Message != nil {
 			if err := b.handleCommand(update.Message); err != nil {
 				return err
 			}
-
-			continue
 		}
 	}
 

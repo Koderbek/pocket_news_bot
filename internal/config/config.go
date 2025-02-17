@@ -9,9 +9,12 @@ import (
 )
 
 type Messages struct {
-	Start          string `mapstructure:"start"`
-	EditCategory   string `mapstructure:"editCategory"`
-	UnknownCommand string `mapstructure:"unknownCommand"`
+	RateLimit           int           `mapstructure:"rateLimit"`
+	RateLimitInterval   time.Duration `mapstructure:"rateLimitInterval"`
+	StartCommand        string        `mapstructure:"startCommand"`
+	EditCategoryCommand string        `mapstructure:"editCategoryCommand"`
+	UnknownCommand      string        `mapstructure:"unknownCommand"`
+	ManyRequestsCommand string        `mapstructure:"manyRequestsCommand"`
 }
 
 type Db struct {
