@@ -1,10 +1,8 @@
 package config
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -18,7 +16,8 @@ type Messages struct {
 }
 
 type Db struct {
-	ConnectionUrl string
+	ConnectionUrl     string
+	TestConnectionUrl string
 }
 
 type News struct {
@@ -74,16 +73,7 @@ func Init() (*Config, error) {
 }
 
 func setUpViper() error {
-	// Получаем абсолютный путь к исполняемому файлу (message_sender)
-	execPath, err := os.Executable()
-	if err != nil {
-		return fmt.Errorf("failed to get executable path: %w", err)
-	}
-
-	// Определяем директорию, в которой лежит бинарник (обычно это .bin/)
-	execDir := filepath.Dir(execPath)
-	configPath := filepath.Join(execDir, "../configs") // Поднимаемся из .bin/ в корень, затем заходим в configs
-	viper.AddConfigPath(configPath)
+	viper.AddConfigPath(os.Getenv("MAIN_CONFIG_PATH"))
 	viper.SetConfigName("main")
 
 	return viper.ReadInConfig()
@@ -120,6 +110,7 @@ func unmarshal(cfg *Config) error {
 func fromEnv(cfg *Config) error {
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
 	cfg.Db.ConnectionUrl = os.Getenv("DB_CONNECTION")
+	cfg.Db.TestConnectionUrl = os.Getenv("DB_CONNECTION_TEST")
 	cfg.News.ApiKey = os.Getenv("NEWS_API_KEY")
 
 	return nil

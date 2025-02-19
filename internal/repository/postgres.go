@@ -26,3 +26,17 @@ func NewPostgresDB(cfg config.Db) (*sqlx.DB, error) {
 
 	return db, nil
 }
+
+func NewPostgresTestDB(cfg config.Db) (*sqlx.DB, error) {
+	db, err := sqlx.Open("postgres", cfg.TestConnectionUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
