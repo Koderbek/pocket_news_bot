@@ -15,7 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg, err := config.Init()
+	cfg, err := config.Init(false)
 	if err != nil {
 		logger.Fatal(err)
 	}

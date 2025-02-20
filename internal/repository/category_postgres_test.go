@@ -10,7 +10,7 @@ import (
 
 func TestCategoryPostgres_GetAll(t *testing.T) {
 	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init()
+	cfg, _ := config.Init(true)
 	db, _ := NewPostgresTestDB(cfg.Db)
 	r := NewCategoryPostgres(db)
 	defer db.Close()
@@ -43,7 +43,7 @@ func TestCategoryPostgres_GetAll(t *testing.T) {
 
 func TestCategoryPostgres_GetByCode(t *testing.T) {
 	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init()
+	cfg, _ := config.Init(true)
 	db, _ := NewPostgresTestDB(cfg.Db)
 	r := NewCategoryPostgres(db)
 	defer db.Close()
