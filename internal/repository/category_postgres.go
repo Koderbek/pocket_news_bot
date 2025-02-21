@@ -61,6 +61,7 @@ func (r *CategoryPostgres) ForSending() (*model.Category, error) {
 func (r *CategoryPostgres) UpdateLastSent(code string) error {
 	query := fmt.Sprintf("UPDATE %s SET last_sent = NOW() WHERE code = $1;", categoryTable)
 	_, err := r.db.Exec(query, code)
+	r.allCategories = nil
 
 	return err
 }
