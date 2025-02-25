@@ -1,57 +1,55 @@
 package repository
 
 import (
-	"errors"
-	"fmt"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
-	sqlmock "github.com/zhashkevych/go-sqlxmock"
-	"log"
+	"strings"
 	"testing"
 )
 
 func TestDomainBlacklistPostgres_Save(t *testing.T) {
-	db, mock, err := sqlmock.Newx()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer db.Close()
+	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
+	cfg, _ := config.Init(true)
+	db, _ := NewPostgresTestDB(cfg.Db)
 	r := NewDomainBlacklistPostgres(db)
+	defer db.Close()
+
 	testCases := []struct {
-		name         string
-		param        []string
-		shouldFail   bool
-		mockBehavior func()
+		name       string
+		param      []string
+		shouldFail bool
 	}{
 		{
 			name:       "case-1: valid result",
+			param:      []string{"test_1.ru", "test_2.ru"},
 			shouldFail: false,
-			param:      []string{"test_1.ru", "test_2.ru"},
-			mockBehavior: func() {
-				query := fmt.Sprintf("INSERT INTO %s", domainBlacklistTable)
-				mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
-			},
 		},
 		{
-			name:       "case-2: return error",
+			name: "case-1: duplicate result",
+			param: []string{
+				"test_1.ru",
+				"test_2.ru",
+			},
+			shouldFail: false,
+		},
+		{
+			name:       "case-3: empty param",
+			param:      []string{},
+			shouldFail: false,
+		},
+		{
+			name: "case-1: error result",
+			param: []string{
+				"test_1.ru",
+				strings.Repeat("test.ru", 100),
+			},
 			shouldFail: true,
-			param:      []string{"test_1.ru", "test_2.ru"},
-			mockBehavior: func() {
-				query := fmt.Sprintf("INSERT INTO %s", domainBlacklistTable)
-				mock.ExpectExec(query).WillReturnError(errors.New("return error"))
-			},
-		},
-		{
-			name:         "case-3: empty param",
-			shouldFail:   false,
-			param:        []string{},
-			mockBehavior: func() {},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			tc.mockBehavior()
 			err := r.Save(tc.param)
 			if tc.shouldFail {
 				assert.Error(t, err)
@@ -63,54 +61,31 @@ func TestDomainBlacklistPostgres_Save(t *testing.T) {
 }
 
 func TestDomainBlacklistPostgres_IsExists(t *testing.T) {
-	db, mock, err := sqlmock.Newx()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer db.Close()
+	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
+	cfg, _ := config.Init(true)
+	db, _ := NewPostgresTestDB(cfg.Db)
 	r := NewDomainBlacklistPostgres(db)
+	defer db.Close()
+
 	testCases := []struct {
-		name         string
-		param        string
-		result       bool
-		mockBehavior func(searchDomain string)
+		name   string
+		param  string
+		result bool
 	}{
 		{
 			name:   "case-1: find",
 			param:  "test_1.ru",
 			result: true,
-			mockBehavior: func(searchDomain string) {
-				query := fmt.Sprintf("SELECT domain FROM %s", domainBlacklistTable)
-				rows := sqlmock.NewRows([]string{"domain"}).AddRow(searchDomain)
-
-				mock.ExpectQuery(query).WillReturnRows(rows)
-			},
 		},
 		{
 			name:   "case-2: not found",
-			param:  "test_2.ru",
+			param:  "test_999.ru",
 			result: false,
-			mockBehavior: func(searchDomain string) {
-				query := fmt.Sprintf("SELECT domain FROM %s", domainBlacklistTable)
-				rows := sqlmock.NewRows([]string{"domain"}).AddRow("")
-				mock.ExpectQuery(query).WillReturnRows(rows)
-			},
-		},
-		{
-			name:   "case-3: return error",
-			param:  "test_3.ru",
-			result: false,
-			mockBehavior: func(searchDomain string) {
-				query := fmt.Sprintf("SELECT domain FROM %s", domainBlacklistTable)
-				mock.ExpectQuery(query).WillReturnError(errors.New("return error"))
-			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			tc.mockBehavior(tc.param)
 			got := r.IsExists(tc.param)
 			assert.Equal(t, tc.result, got)
 		})
