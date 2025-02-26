@@ -24,7 +24,7 @@ func (r *SentNewsPostgres) Save(linksHash []string) error {
 		values = append(values, fmt.Sprintf("('%s')", hash))
 	}
 
-	query := fmt.Sprintf("INSERT INTO %s (url_hash_sum) values %s", sentNewsTable, strings.Join(values, ","))
+	query := fmt.Sprintf("INSERT INTO %s (url_hash_sum) values %s ON CONFLICT (url_hash_sum) DO NOTHING", sentNewsTable, strings.Join(values, ","))
 	_, err := r.db.Exec(query)
 
 	return err

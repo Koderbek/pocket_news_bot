@@ -72,9 +72,6 @@ github.com/stretchr/testify/require
 # github.com/technoweenie/multipartstreamer v1.0.1
 ## explicit
 github.com/technoweenie/multipartstreamer
-# github.com/zhashkevych/go-sqlxmock v1.5.2-0.20201023121933-f973d0041cfc
-## explicit; go 1.15
-github.com/zhashkevych/go-sqlxmock
 # golang.org/x/sys v0.10.0
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader
