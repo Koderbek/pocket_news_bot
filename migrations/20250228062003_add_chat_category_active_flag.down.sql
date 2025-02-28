@@ -1,0 +1,1 @@
+ALTER TABLE chat_category DROP COLUMN IF EXISTS active;
