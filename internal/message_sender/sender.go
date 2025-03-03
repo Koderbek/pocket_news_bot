@@ -51,6 +51,7 @@ func (c *Sender) Start() error {
 
 	var linksHash []string
 	message := []string{makeMessageHeader(cat)}
+	i := 1
 	for _, article := range catNews {
 		linkHash := linkHashSum(article.Url)
 		if c.repo.SentNews.IsExists(linkHash) {
@@ -69,7 +70,8 @@ func (c *Sender) Start() error {
 		}
 
 		linksHash = append(linksHash, linkHash)
-		message = append(message, makeMessage(article))
+		message = append(message, makeMessage(article, i))
+		i++
 	}
 
 	if len(linksHash) == 0 {

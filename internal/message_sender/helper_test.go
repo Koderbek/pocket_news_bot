@@ -20,17 +20,17 @@ func TestMakeMessage(t *testing.T) {
 				Description: "Текст",
 				Url:         "https://www.youtube.com/",
 			},
-			result: "<b>Тест</b>\n<i>Текст</i>\n<a href=\"https://www.youtube.com/\">Читать в источнике</a>",
+			result: "<b>#0 Тест</b>\n<i>Текст</i>\n<a href=\"https://www.youtube.com/\">Читать в источнике</a>",
 		},
 		{
 			name:   "case-2: empty param",
 			param:  model.Article{},
-			result: "<b></b>\n<i></i>\n<a href=\"\">Читать в источнике</a>",
+			result: "<b>#1 </b>\n<i></i>\n<a href=\"\">Читать в источнике</a>",
 		},
 	}
 
-	for _, tc := range testCases {
-		res := makeMessage(tc.param)
+	for i, tc := range testCases {
+		res := makeMessage(tc.param, i)
 		require.Equal(t, tc.result, res)
 	}
 }

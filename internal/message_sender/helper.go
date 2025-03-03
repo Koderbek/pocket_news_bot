@@ -7,8 +7,14 @@ import (
 	"net/url"
 )
 
-func makeMessage(article model.Article) string {
-	return fmt.Sprintf("<b>%s</b>\n<i>%s</i>\n<a href=\"%s\">Читать в источнике</a>", article.Title, article.Description, article.Url)
+func makeMessage(article model.Article, index int) string {
+	return fmt.Sprintf(
+		"<b>#%d %s</b>\n<i>%s</i>\n<a href=\"%s\">Читать в источнике</a>",
+		index,
+		article.Title,
+		article.Description,
+		article.Url,
+	)
 }
 
 func makeMessageHeader(category *model.Category) string {
