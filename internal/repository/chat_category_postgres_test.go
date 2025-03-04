@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestChatCategoryPostgres_Create(t *testing.T) {
+func TestChatCategoryPostgres_Add(t *testing.T) {
 	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
 	cfg, _ := config.Init(true)
 	db, _ := NewPostgresTestDB(cfg.Db)
@@ -32,12 +32,17 @@ func TestChatCategoryPostgres_Create(t *testing.T) {
 			shouldFail: false,
 		},
 		{
-			name:       "case-2: return error - duplication",
-			param:      paramType{1, 1, "TestChat"},
-			shouldFail: true,
+			name:       "case-2: valid result",
+			param:      paramType{1, 2, "TestChat"},
+			shouldFail: false,
 		},
 		{
-			name:       "case-3: return error - no category",
+			name:       "case-3: valid result - duplication",
+			param:      paramType{1, 1, "TestChat"},
+			shouldFail: false,
+		},
+		{
+			name:       "case-4: return error - no category",
 			param:      paramType{1, 111, "TestChat"},
 			shouldFail: true,
 		},
@@ -45,12 +50,53 @@ func TestChatCategoryPostgres_Create(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := r.Create(tc.param.chatId, tc.param.categoryId, tc.param.name)
+			err := r.Add(tc.param.chatId, tc.param.categoryId, tc.param.name)
 			if tc.shouldFail {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
+		})
+	}
+}
+
+func TestChatCategoryPostgres_Deactivate(t *testing.T) {
+	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
+	cfg, _ := config.Init(true)
+	db, _ := NewPostgresTestDB(cfg.Db)
+	r := NewChatCategoryPostgres(db)
+	defer db.Close()
+
+	type paramType struct {
+		chatId     int64
+		categoryId int8
+	}
+
+	testCases := []struct {
+		name  string
+		param paramType
+	}{
+		{
+			name:  "case-1: successful deactivate",
+			param: paramType{1, 2},
+		},
+		{
+			name:  "case-2: no chat",
+			param: paramType{111, 1},
+		},
+		{
+			name:  "case-3: no category",
+			param: paramType{1, 111},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := r.Deactivate(tc.param.chatId, tc.param.categoryId)
+			assert.NoError(t, err)
+
+			res := r.HasChatCategory(tc.param.chatId, tc.param.categoryId)
+			assert.Equal(t, res, false)
 		})
 	}
 }
@@ -62,19 +108,17 @@ func TestChatCategoryPostgres_GetByChatId(t *testing.T) {
 	r := NewChatCategoryPostgres(db)
 	defer db.Close()
 
-	result := []model.ChatCategory{
-		{ChatId: 1, ChatName: "TestChat", CategoryId: 1, CategoryCode: "general", CategoryName: "Главное"},
-	}
-
 	testCases := []struct {
 		name   string
 		param  int64
 		result []model.ChatCategory
 	}{
 		{
-			name:   "case-1: valid result",
-			param:  1,
-			result: result,
+			name:  "case-1: valid result",
+			param: 1,
+			result: []model.ChatCategory{
+				{ChatId: 1, ChatName: "TestChat", CategoryId: 1, CategoryCode: "general", CategoryName: "Главное"},
+			},
 		},
 		{
 			name:   "case-2: empty result",
@@ -114,7 +158,12 @@ func TestChatCategoryPostgres_GetByCategoryId(t *testing.T) {
 			result: result,
 		},
 		{
-			name:   "case-2: empty result",
+			name:   "case-2: empty result - deactivated",
+			param:  2,
+			result: nil,
+		},
+		{
+			name:   "case-3: empty result - no category",
 			param:  111,
 			result: nil,
 		},
@@ -152,12 +201,17 @@ func TestChatCategoryPostgres_HasChatCategory(t *testing.T) {
 			result: true,
 		},
 		{
-			name:   "case-2: not found - no chat",
+			name:   "case-2: not found - deactivated category",
+			param:  paramType{1, 2},
+			result: false,
+		},
+		{
+			name:   "case-3: not found - no chat",
 			param:  paramType{111, 1},
 			result: false,
 		},
 		{
-			name:   "case-3: not found - no category",
+			name:   "case-4: not found - no category",
 			param:  paramType{1, 111},
 			result: false,
 		},
@@ -167,47 +221,6 @@ func TestChatCategoryPostgres_HasChatCategory(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			got := r.HasChatCategory(tc.param.chatId, tc.param.categoryId)
 			assert.Equal(t, tc.result, got)
-		})
-	}
-}
-
-func TestChatCategoryPostgres_Delete(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
-	r := NewChatCategoryPostgres(db)
-	defer db.Close()
-
-	type paramType struct {
-		chatId     int64
-		categoryId int8
-	}
-
-	testCases := []struct {
-		name  string
-		param paramType
-	}{
-		{
-			name:  "case-1: successful delete",
-			param: paramType{1, 1},
-		},
-		{
-			name:  "case-2: no chat",
-			param: paramType{111, 1},
-		},
-		{
-			name:  "case-3: no category",
-			param: paramType{1, 111},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			err := r.Delete(tc.param.chatId, tc.param.categoryId)
-			assert.NoError(t, err)
-
-			res := r.HasChatCategory(tc.param.chatId, tc.param.categoryId)
-			assert.Equal(t, res, false)
 		})
 	}
 }

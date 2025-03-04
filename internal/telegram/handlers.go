@@ -135,7 +135,7 @@ func (b *Bot) editChatCategory(callbackQuery *tgbotapi.CallbackQuery) error {
 				continue
 			}
 
-			err = b.repository.ChatCategory.Create(chatId, cat.Id, callbackQuery.Message.Chat.UserName)
+			err = b.repository.ChatCategory.Add(chatId, cat.Id, callbackQuery.Message.Chat.UserName)
 			if err != nil {
 				return err
 			}
@@ -150,9 +150,9 @@ func (b *Bot) editChatCategory(callbackQuery *tgbotapi.CallbackQuery) error {
 	}
 
 	if b.repository.ChatCategory.HasChatCategory(chatId, cat.Id) {
-		err = b.repository.ChatCategory.Delete(chatId, cat.Id)
+		err = b.repository.ChatCategory.Deactivate(chatId, cat.Id)
 	} else {
-		err = b.repository.ChatCategory.Create(chatId, cat.Id, callbackQuery.Message.Chat.UserName)
+		err = b.repository.ChatCategory.Add(chatId, cat.Id, callbackQuery.Message.Chat.UserName)
 	}
 
 	return err
