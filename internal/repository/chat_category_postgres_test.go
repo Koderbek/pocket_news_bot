@@ -224,3 +224,36 @@ func TestChatCategoryPostgres_HasChatCategory(t *testing.T) {
 		})
 	}
 }
+
+func TestChatCategoryPostgres_DeactivateChat(t *testing.T) {
+	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
+	cfg, _ := config.Init(true)
+	db, _ := NewPostgresTestDB(cfg.Db)
+	r := NewChatCategoryPostgres(db)
+	defer db.Close()
+
+	testCases := []struct {
+		name  string
+		param int64
+	}{
+		{
+			name:  "case-1: successful deactivate",
+			param: 1,
+		},
+		{
+			name:  "case-2: no chat",
+			param: 2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := r.DeactivateChat(tc.param)
+			assert.NoError(t, err)
+
+			res, err := r.GetByChatId(tc.param)
+			assert.NoError(t, err)
+			assert.Equal(t, res, []model.ChatCategory(nil))
+		})
+	}
+}

@@ -41,6 +41,18 @@ func (r *ChatCategoryPostgres) Deactivate(chatId int64, categoryId int8) error {
 	return err
 }
 
+func (r *ChatCategoryPostgres) DeactivateChat(chatId int64) error {
+	query := fmt.Sprintf(`
+		UPDATE %s
+		SET active      = 'N',
+			last_update = NOW()
+		WHERE chat_id = $1;
+	`, chatCategoryTable)
+
+	_, err := r.db.Exec(query, chatId)
+	return err
+}
+
 func (r *ChatCategoryPostgres) GetByChatId(chatId int64) ([]model.ChatCategory, error) {
 	var items []model.ChatCategory
 	query := fmt.Sprintf(`
