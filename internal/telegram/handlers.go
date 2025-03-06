@@ -3,7 +3,7 @@ package telegram
 import (
 	"fmt"
 	"github.com/Koderbek/pocket_news_bot/internal/model"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"strings"
 )
 
@@ -35,9 +35,6 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	return err
 }
 
-// TODO: Логи при остановке бота
-// 2025/02/14 10:42:28 getUpdates resp: [{UpdateID:16129341 Message:<nil> EditedMessage:<nil> ChannelPost:<nil> EditedChannelPost:<nil> InlineQuery:<nil> ChosenInlineResult:<nil> CallbackQuery:<nil> ShippingQuery:<nil> PreCheckoutQuery:<nil>}]
-// 2025/02/14 10:43:48 getUpdates resp: [{UpdateID:16129344 Message:<nil> EditedMessage:<nil> ChannelPost:<nil> EditedChannelPost:<nil> InlineQuery:<nil> ChosenInlineResult:<nil> CallbackQuery:<nil> ShippingQuery:<nil> PreCheckoutQuery:<nil>}]
 func (b *Bot) handleEditCategoryCommand(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.EditCategoryCommand)
 	resMsg, err := b.bot.Send(msg)

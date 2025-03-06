@@ -6,7 +6,7 @@ import (
 	"github.com/Koderbek/pocket_news_bot/internal/message_sender"
 	"github.com/Koderbek/pocket_news_bot/internal/news"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 )
 

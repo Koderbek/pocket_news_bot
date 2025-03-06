@@ -5,7 +5,7 @@ import (
 	logger2 "github.com/Koderbek/pocket_news_bot/internal/logger"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	"github.com/Koderbek/pocket_news_bot/internal/telegram"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 )
 

@@ -7,22 +7,22 @@ import (
 
 type UserRateLimiter struct {
 	mu       sync.Mutex
-	requests map[int]int       // Количество запросов пользователя
-	lastSeen map[int]time.Time // Время последнего запроса
-	limit    int               // Максимальное количество запросов
-	interval time.Duration     // Интервал времени для сброса счетчика
+	requests map[int64]int       // Количество запросов пользователя
+	lastSeen map[int64]time.Time // Время последнего запроса
+	limit    int                 // Максимальное количество запросов
+	interval time.Duration       // Интервал времени для сброса счетчика
 }
 
 func NewUserRateLimiter(limit int, interval time.Duration) *UserRateLimiter {
 	return &UserRateLimiter{
-		requests: make(map[int]int),
-		lastSeen: make(map[int]time.Time),
+		requests: make(map[int64]int),
+		lastSeen: make(map[int64]time.Time),
 		limit:    limit,
 		interval: interval,
 	}
 }
 
-func (rl *UserRateLimiter) Allow(userID int) bool {
+func (rl *UserRateLimiter) Allow(userID int64) bool {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
