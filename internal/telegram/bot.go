@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"fmt"
 	"github.com/Koderbek/pocket_news_bot/internal/config"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -31,6 +30,15 @@ func (b *Bot) Start() error {
 	// Создаем rate limiter: максимум 5 запросов в 10 секунд
 	rateLimiter := NewUserRateLimiter(b.messages.RateLimit, b.messages.RateLimitInterval*time.Second)
 	for update := range updates {
+		//При отключении бота деактивируем чат
+		if update.MyChatMember != nil && update.MyChatMember.NewChatMember.WasKicked() {
+			if err := b.repository.ChatCategory.DeactivateChat(update.MyChatMember.Chat.ID); err != nil {
+				return err
+			}
+
+			continue
+		}
+
 		var msg *tgbotapi.Message
 		if update.CallbackQuery != nil {
 			msg = update.CallbackQuery.Message
@@ -44,26 +52,6 @@ func (b *Bot) Start() error {
 			b.bot.Send(msgCfg)
 
 			continue
-		}
-
-		if msg != nil {
-			chatCfg := tgbotapi.GetChatMemberConfig{}
-			chatCfg.ChatID = msg.Chat.ID
-			chatCfg.UserID = msg.From.ID
-
-			chatMember, err := b.bot.GetChatMember(chatCfg)
-			fmt.Println(chatMember)
-			if err != nil {
-				return err
-			}
-
-			if chatMember.WasKicked() {
-				if err = b.repository.ChatCategory.DeactivateChat(msg.Chat.ID); err != nil {
-					return err
-				} else {
-					continue
-				}
-			}
 		}
 
 		if update.CallbackQuery != nil {
