@@ -7,7 +7,7 @@ import (
 	"github.com/Koderbek/pocket_news_bot/internal/config"
 	"github.com/Koderbek/pocket_news_bot/internal/model"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 )
@@ -39,7 +39,7 @@ func (c *GNewsClient) GetNews(category string) ([]model.Article, error) {
 
 	var articles model.Articles
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err := json.Unmarshal(body, &articles); err != nil {
 		return nil, errors.New("GetNews: can not unmarshal JSON")
 	}

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Koderbek/pocket_news_bot/internal/config"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 )
@@ -35,7 +35,7 @@ func (c *RoskomsvobodaClient) List() ([]string, error) {
 	}
 
 	var domains []string
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err := json.Unmarshal(body, &domains); err != nil {
 		return nil, errors.New("can not unmarshal JSON")
 	}

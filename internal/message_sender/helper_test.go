@@ -20,12 +20,12 @@ func TestMakeMessage(t *testing.T) {
 				Description: "Текст",
 				Url:         "https://www.youtube.com/",
 			},
-			result: "<b>#0 Тест</b>\n<i>Текст</i>\n<a href=\"https://www.youtube.com/\">Читать в источнике</a>",
+			result: "<b>0️⃣ Тест</b>\n<i>Текст</i>\n<a href=\"https://www.youtube.com/\">Читать в источнике</a>",
 		},
 		{
 			name:   "case-2: empty param",
 			param:  model.Article{},
-			result: "<b>#1 </b>\n<i></i>\n<a href=\"\">Читать в источнике</a>",
+			result: "<b>1️⃣ </b>\n<i></i>\n<a href=\"\">Читать в источнике</a>",
 		},
 	}
 

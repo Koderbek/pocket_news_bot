@@ -7,10 +7,29 @@ import (
 	"net/url"
 )
 
+var indexes = [11]string{
+	"0️⃣",
+	"1️⃣",
+	"2️⃣",
+	"3️⃣",
+	"4️⃣",
+	"5️⃣",
+	"6️⃣",
+	"7️⃣",
+	"8️⃣",
+	"9️⃣",
+	"🔟",
+}
+
 func makeMessage(article model.Article, index int) string {
+	//Костыль на всякий случай
+	if index > 10 {
+		index = 10
+	}
+
 	return fmt.Sprintf(
-		"<b>#%d %s</b>\n<i>%s</i>\n<a href=\"%s\">Читать в источнике</a>",
-		index,
+		"<b>%s %s</b>\n<i>%s</i>\n<a href=\"%s\">Читать в источнике</a>",
+		indexes[index],
 		article.Title,
 		article.Description,
 		article.Url,
