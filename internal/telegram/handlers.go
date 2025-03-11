@@ -93,10 +93,10 @@ func (b *Bot) chatCategoryButtons(chatId int64) (*tgbotapi.InlineKeyboardMarkup,
 
 	var buttons [][]tgbotapi.InlineKeyboardButton
 	for _, cat := range categories {
-		btnName := "🔲 " + cat.Name
+		btnName := "⚪️ " + cat.Name
 		for _, chatCat := range chatCategories {
 			if chatCat.CategoryId == cat.Id {
-				btnName = "☑️ " + cat.Name
+				btnName = "🟢 " + cat.Name
 				break
 			}
 		}
