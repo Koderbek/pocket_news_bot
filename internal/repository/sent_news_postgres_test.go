@@ -9,9 +9,9 @@ import (
 )
 
 func TestSentNewsPostgres_Save(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewSentNewsPostgres(db)
 	defer db.Close()
 
@@ -55,9 +55,9 @@ func TestSentNewsPostgres_Save(t *testing.T) {
 }
 
 func TestSentNewsPostgres_IsExists(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewSentNewsPostgres(db)
 	defer db.Close()
 
@@ -87,9 +87,9 @@ func TestSentNewsPostgres_IsExists(t *testing.T) {
 }
 
 func TestSentNewsPostgres_Clean(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewSentNewsPostgres(db)
 	defer db.Close()
 

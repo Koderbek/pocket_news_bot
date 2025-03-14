@@ -9,9 +9,9 @@ import (
 )
 
 func TestCategoryPostgres_GetAll(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewCategoryPostgres(db)
 	defer db.Close()
 
@@ -36,9 +36,9 @@ func TestCategoryPostgres_GetAll(t *testing.T) {
 }
 
 func TestCategoryPostgres_GetByCode(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewCategoryPostgres(db)
 	defer db.Close()
 
@@ -69,9 +69,9 @@ func TestCategoryPostgres_GetByCode(t *testing.T) {
 }
 
 func TestCategoryPostgres_UpdateLastSent(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewCategoryPostgres(db)
 	defer db.Close()
 
@@ -105,9 +105,9 @@ func TestCategoryPostgres_UpdateLastSent(t *testing.T) {
 }
 
 func TestCategoryPostgres_ForSending(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewCategoryPostgres(db)
 	defer db.Close()
 

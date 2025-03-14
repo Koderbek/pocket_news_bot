@@ -9,9 +9,9 @@ import (
 )
 
 func TestChatCategoryPostgres_Add(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewChatCategoryPostgres(db)
 	defer db.Close()
 
@@ -61,9 +61,9 @@ func TestChatCategoryPostgres_Add(t *testing.T) {
 }
 
 func TestChatCategoryPostgres_Deactivate(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewChatCategoryPostgres(db)
 	defer db.Close()
 
@@ -102,9 +102,9 @@ func TestChatCategoryPostgres_Deactivate(t *testing.T) {
 }
 
 func TestChatCategoryPostgres_GetByChatId(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewChatCategoryPostgres(db)
 	defer db.Close()
 
@@ -137,9 +137,9 @@ func TestChatCategoryPostgres_GetByChatId(t *testing.T) {
 }
 
 func TestChatCategoryPostgres_GetByCategoryId(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewChatCategoryPostgres(db)
 	defer db.Close()
 
@@ -179,9 +179,9 @@ func TestChatCategoryPostgres_GetByCategoryId(t *testing.T) {
 }
 
 func TestChatCategoryPostgres_HasChatCategory(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewChatCategoryPostgres(db)
 	defer db.Close()
 
@@ -226,9 +226,9 @@ func TestChatCategoryPostgres_HasChatCategory(t *testing.T) {
 }
 
 func TestChatCategoryPostgres_DeactivateChat(t *testing.T) {
-	godotenv.Load("../../.env") // Загружаем переменные окружения из .env
-	cfg, _ := config.Init(true)
-	db, _ := NewPostgresTestDB(cfg.Db)
+	godotenv.Load("../../.env_test") // Загружаем переменные окружения
+	cfg, _ := config.Init()
+	db, _ := NewPostgresDB(cfg.Db)
 	r := NewChatCategoryPostgres(db)
 	defer db.Close()
 

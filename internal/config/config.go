@@ -16,8 +16,7 @@ type Messages struct {
 }
 
 type Db struct {
-	ConnectionUrl     string
-	TestConnectionUrl string
+	ConnectionUrl string
 }
 
 type News struct {
@@ -45,7 +44,6 @@ type Import struct {
 }
 
 type Config struct {
-	testMode      bool
 	TelegramToken string
 	News          News
 	Rkn           Rkn
@@ -55,9 +53,11 @@ type Config struct {
 	Import        Import
 }
 
-func Init(testMode bool) (*Config, error) {
+func Init() (*Config, error) {
 	var cfg Config
-	cfg.testMode = testMode
+	if err := cfg.fromEnv(); err != nil {
+		return nil, err
+	}
 
 	if err := cfg.setUpViper(); err != nil {
 		return nil, err
@@ -67,22 +67,11 @@ func Init(testMode bool) (*Config, error) {
 		return nil, err
 	}
 
-	if err := cfg.fromEnv(); err != nil {
-		return nil, err
-	}
-
 	return &cfg, nil
 }
 
 func (cfg *Config) setUpViper() error {
-	var cfgPath string
-	if cfg.testMode {
-		cfgPath = os.Getenv("MAIN_CONFIG_PATH_TEST")
-	} else {
-		cfgPath = os.Getenv("MAIN_CONFIG_PATH")
-	}
-
-	viper.AddConfigPath(cfgPath)
+	viper.AddConfigPath(os.Getenv("ROOT_PATH") + "configs")
 	viper.SetConfigName("main")
 
 	return viper.ReadInConfig()
@@ -119,7 +108,6 @@ func (cfg *Config) unmarshal() error {
 func (cfg *Config) fromEnv() error {
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
 	cfg.Db.ConnectionUrl = os.Getenv("DB_CONNECTION")
-	cfg.Db.TestConnectionUrl = os.Getenv("DB_CONNECTION_TEST")
 	cfg.News.ApiKey = os.Getenv("NEWS_API_KEY")
 
 	return nil
