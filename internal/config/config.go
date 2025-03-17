@@ -45,6 +45,7 @@ type Import struct {
 
 type Config struct {
 	TelegramToken string
+	RootPath      string
 	News          News
 	Rkn           Rkn
 	Db            Db
@@ -71,7 +72,7 @@ func Init() (*Config, error) {
 }
 
 func (cfg *Config) setUpViper() error {
-	viper.AddConfigPath(os.Getenv("ROOT_PATH") + "configs")
+	viper.AddConfigPath(cfg.RootPath + "/configs")
 	viper.SetConfigName("main")
 
 	return viper.ReadInConfig()
@@ -107,6 +108,7 @@ func (cfg *Config) unmarshal() error {
 
 func (cfg *Config) fromEnv() error {
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
+	cfg.RootPath = os.Getenv("ROOT_PATH")
 	cfg.Db.ConnectionUrl = os.Getenv("DB_CONNECTION")
 	cfg.News.ApiKey = os.Getenv("NEWS_API_KEY")
 

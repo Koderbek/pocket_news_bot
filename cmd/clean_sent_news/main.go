@@ -1,32 +1,42 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Koderbek/pocket_news_bot/internal/config"
-	logger2 "github.com/Koderbek/pocket_news_bot/internal/logger"
+	"github.com/Koderbek/pocket_news_bot/internal/log_repository"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	"log"
 )
 
+const logSource = "clean_sent_news"
+
 func main() {
-	logger, err := logger2.Init("clean_sent_news.log")
+	cfg, err := config.Init()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cfg, err := config.Init()
+	logDb, err := log_repository.NewSqliteDB(cfg)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
+	}
+	defer logDb.Close()
+
+	logRep, err := log_repository.NewLogRepository(logDb)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	db, err := repository.NewPostgresDB(cfg.Db)
 	if err != nil {
-		logger.Fatalf("Init DB error: %s", err.Error())
+		logRep.Error(logSource, fmt.Sprintf("Init DB error: %s", err.Error()))
 	}
+	defer db.Close()
 
 	repos := repository.NewPostgresRepository(db)
 	if err := repos.SentNews.Clean(); err != nil {
-		logger.Fatal(err)
+		logRep.Error(logSource, err.Error())
 	} else {
-		logger.Println("[SUCCESS] Clean sent_news is completed")
+		logRep.Info(logSource, "Clean sent_news is completed")
 	}
 }

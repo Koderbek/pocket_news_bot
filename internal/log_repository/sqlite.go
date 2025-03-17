@@ -1,21 +1,22 @@
-package repository
+package log_repository
 
 import (
 	"database/sql"
+	"github.com/Koderbek/pocket_news_bot/internal/config"
 	"log"
 	_ "modernc.org/sqlite"
 )
 
-func NewSqliteDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite", "./logs.db")
+func NewSqliteDB(cfg *config.Config) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", cfg.RootPath+"/logs/logs.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer db.Close()
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS logs (
 			source TEXT NOT NULL,
+			level TEXT NOT NULL,
 			message TEXT NOT NULL,
 			timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 		);

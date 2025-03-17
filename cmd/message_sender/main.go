@@ -1,8 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Koderbek/pocket_news_bot/internal/config"
-	logger2 "github.com/Koderbek/pocket_news_bot/internal/logger"
+	"github.com/Koderbek/pocket_news_bot/internal/log_repository"
 	"github.com/Koderbek/pocket_news_bot/internal/message_sender"
 	"github.com/Koderbek/pocket_news_bot/internal/news"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
@@ -10,33 +11,42 @@ import (
 	"log"
 )
 
+const logSource = "message_sender"
+
 func main() {
-	logger, err := logger2.Init("message_sender.log")
+	cfg, err := config.Init()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cfg, err := config.Init()
+	logDb, err := log_repository.NewSqliteDB(cfg)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
+	}
+	defer logDb.Close()
+
+	logRep, err := log_repository.NewLogRepository(logDb)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	db, err := repository.NewPostgresDB(cfg.Db)
 	if err != nil {
-		logger.Fatalf("Init DB error: %s", err.Error())
+		logRep.Error(logSource, fmt.Sprintf("Init DB error: %s", err.Error()))
 	}
+	defer db.Close()
 
 	repos := repository.NewPostgresRepository(db)
 	botApi, err := tgbotapi.NewBotAPI(cfg.TelegramToken)
 	if err != nil {
-		logger.Fatal(err)
+		logRep.Error(logSource, err.Error())
 	}
 
 	newsClient := news.NewGNewsClient(repos, cfg.News)
 	sender := message_sender.NewSender(botApi, newsClient, repos, cfg.MessageSender)
 	if err := sender.Start(); err != nil {
-		logger.Fatal(err)
+		logRep.Error(logSource, err.Error())
 	} else {
-		logger.Println("[SUCCESS] Sending is completed")
+		logRep.Info(logSource, "Sending is completed")
 	}
 }

@@ -34,6 +34,8 @@ services:
       context: .
     env_file:
       - .env
+    volumes:
+      - ./logs:/usr/local/src/logs
     depends_on:
       postgres_db:
         condition: service_healthy
