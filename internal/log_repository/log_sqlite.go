@@ -2,6 +2,7 @@ package log_repository
 
 import (
 	"database/sql"
+	"time"
 )
 
 const errorLevel = "ERROR"
@@ -17,10 +18,11 @@ func NewLogSqlite(db *sql.DB) *LogSqlite {
 
 func (l *LogSqlite) log(source, level, message string) error {
 	_, err := l.db.Exec(
-		"INSERT INTO logs (source, level, message) VALUES ($1, $2, $3)",
+		"INSERT INTO logs (source, level, message, timestamp) VALUES ($1, $2, $3, $4)",
 		source,
 		level,
 		message,
+		time.Now().Format(time.DateTime),
 	)
 
 	return err
