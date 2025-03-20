@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	botUrl  = "https://t.me/pocket_news_bot"
-	botName = "🗞Pocket News"
+	botUrl           = "https://t.me/pocket_news_bot"
+	botName          = "🗞Pocket News"
+	messageSeparator = "\n———————————————\n"
 )
 
 type Sender struct {
@@ -79,7 +80,7 @@ func (c *Sender) Start() error {
 	}
 
 	//Отправляем сообщение пользователям
-	if err = c.sendMessage(cat, strings.Join(message, "\n\n")); err != nil {
+	if err = c.sendMessage(cat, strings.Join(message, messageSeparator)); err != nil {
 		return err
 	}
 

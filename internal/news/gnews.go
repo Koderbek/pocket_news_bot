@@ -49,7 +49,7 @@ func (c *GNewsClient) GetNews(category string) ([]model.Article, error) {
 
 func (c *GNewsClient) makeUrl(category string) string {
 	now := time.Now()
-	date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 
 	return fmt.Sprintf(c.cfg.Url, category, date.Format(time.RFC3339), c.cfg.ApiKey)
 }
