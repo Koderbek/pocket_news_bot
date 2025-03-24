@@ -27,6 +27,10 @@ type SentNews interface {
 	Clean() error
 }
 
+type NewsSources interface {
+	Save(newsSources []model.NewsSource) error
+}
+
 type DomainBlacklist interface {
 	Save(domains []string) error
 	IsExists(domain string) bool
@@ -36,6 +40,7 @@ type Repository struct {
 	Category
 	ChatCategory
 	SentNews
+	NewsSources
 	DomainBlacklist
 }
 
@@ -44,6 +49,7 @@ func NewPostgresRepository(db *sqlx.DB) *Repository {
 		Category:        NewCategoryPostgres(db),
 		ChatCategory:    NewChatCategoryPostgres(db),
 		SentNews:        NewSentNewsPostgres(db),
+		NewsSources:     NewNewsSourcesPostgres(db),
 		DomainBlacklist: NewDomainBlacklistPostgres(db),
 	}
 }

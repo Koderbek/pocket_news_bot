@@ -10,6 +10,7 @@ const (
 	categoryTable        = "category"
 	chatCategoryTable    = "chat_category"
 	sentNewsTable        = "sent_news"
+	newsSourcesTable     = "news_sources"
 	domainBlacklistTable = "domain_blacklist"
 )
 

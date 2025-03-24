@@ -1,5 +1,6 @@
 .PHONY:
 
+#include .env_test
 include .env
 export
 

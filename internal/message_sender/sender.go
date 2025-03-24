@@ -50,6 +50,7 @@ func (c *Sender) Start() error {
 		return err
 	}
 
+	var newsSources []model.NewsSource
 	var linksHash []string
 	message := []string{makeMessageHeader(cat)}
 	i := 1
@@ -65,9 +66,12 @@ func (c *Sender) Start() error {
 			return err
 		}
 
+		//Проверяем наличие ресурса среди запрещенных
 		if c.repo.DomainBlacklist.IsExists(domain) {
-			//Проверяем наличие ресурса среди запрещенных
+			newsSources = append(newsSources, model.NewsSource{Domain: domain, Category: cat.Code, Active: "N"})
 			continue
+		} else {
+			newsSources = append(newsSources, model.NewsSource{Domain: domain, Category: cat.Code, Active: "Y"})
 		}
 
 		linksHash = append(linksHash, linkHash)
@@ -86,6 +90,10 @@ func (c *Sender) Start() error {
 
 	//Сохраняем хэш отправленных сообщений
 	if err = c.repo.SentNews.Save(linksHash); err != nil {
+		return err
+	}
+
+	if err = c.repo.NewsSources.Save(newsSources); err != nil {
 		return err
 	}
 
