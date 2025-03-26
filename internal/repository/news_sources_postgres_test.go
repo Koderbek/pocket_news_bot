@@ -26,7 +26,7 @@ func TestNewsSourcesPostgres_Save(t *testing.T) {
 			shouldFail: false,
 		},
 		{
-			name:       "case-1: duplicate result",
+			name:       "case-2: duplicate result",
 			param:      []model.NewsSource{{Domain: "test2.com", Category: "general", Active: "N"}},
 			shouldFail: false,
 		},
@@ -36,9 +36,14 @@ func TestNewsSourcesPostgres_Save(t *testing.T) {
 			shouldFail: false,
 		},
 		{
-			name:       "case-1: error result",
+			name:       "case-4: error result",
 			param:      []model.NewsSource{{Domain: "test3.com", Category: "general", Active: "Z"}},
 			shouldFail: true,
+		},
+		{
+			name:       "case-5: same values",
+			param:      []model.NewsSource{{Domain: "test.com", Category: "general", Active: "Y"}, {Domain: "test.com", Category: "general", Active: "Y"}},
+			shouldFail: false,
 		},
 	}
 

@@ -20,6 +20,9 @@ func (r *NewsSourcesPostgres) Save(newsSources []model.NewsSource) error {
 		return nil
 	}
 
+	//Очищаем данные от дублей
+	newsSources = clearDuplicates(newsSources)
+
 	// Создаем срез интерфейсов для передачи в Exec
 	var args []interface{}
 	for _, source := range newsSources {
@@ -46,4 +49,20 @@ func (r *NewsSourcesPostgres) Save(newsSources []model.NewsSource) error {
 
 	_, err := r.db.Exec(query, args...)
 	return err
+}
+
+func clearDuplicates(sources []model.NewsSource) []model.NewsSource {
+	var result []model.NewsSource
+	keys := make(map[string]bool)
+	for _, source := range sources {
+		key := source.Domain + source.Category
+		if _, ok := keys[key]; ok {
+			continue
+		}
+
+		keys[key] = true
+		result = append(result, source)
+	}
+
+	return result
 }
