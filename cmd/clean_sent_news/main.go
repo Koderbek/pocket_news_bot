@@ -6,6 +6,7 @@ import (
 	"github.com/Koderbek/pocket_news_bot/internal/log_repository"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
 	"log"
+	"time"
 )
 
 const logSource = "clean_sent_news"
@@ -34,9 +35,9 @@ func main() {
 	defer db.Close()
 
 	repos := repository.NewPostgresRepository(db)
-	if err := repos.SentNews.Clean(); err != nil {
+	if err := repos.SentNews.DeleteByDate(time.Now().Add(-7 * 24 * time.Hour)); err != nil {
 		logRep.Error(logSource, err.Error())
 	} else {
-		logRep.Info(logSource, "Clean sent_news is completed")
+		logRep.Info(logSource, "DeleteByDate sent_news is completed")
 	}
 }

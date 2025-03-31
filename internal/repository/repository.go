@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/Koderbek/pocket_news_bot/internal/model"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 type Category interface {
@@ -24,7 +25,7 @@ type ChatCategory interface {
 type SentNews interface {
 	Save(linksHash []string) error
 	IsExists(linkHash string) bool
-	Clean() error
+	DeleteByDate(date time.Time) error
 }
 
 type NewsSources interface {

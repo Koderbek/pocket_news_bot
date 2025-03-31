@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strings"
+	"time"
 )
 
 type SentNewsPostgres struct {
@@ -38,8 +39,9 @@ func (r *SentNewsPostgres) IsExists(linkHash string) bool {
 	return err == nil && result == linkHash
 }
 
-func (r *SentNewsPostgres) Clean() error {
-	_, err := r.db.Exec(fmt.Sprintf("TRUNCATE %s", sentNewsTable))
+func (r *SentNewsPostgres) DeleteByDate(date time.Time) error {
+	sql := fmt.Sprintf("DELETE FROM %s WHERE created_at < $1;", sentNewsTable)
+	_, err := r.db.Exec(sql, date.Format(time.DateTime))
 
 	return err
 }

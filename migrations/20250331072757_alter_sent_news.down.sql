@@ -1,0 +1,1 @@
+ALTER TABLE sent_news DROP COLUMN IF EXISTS created_at;

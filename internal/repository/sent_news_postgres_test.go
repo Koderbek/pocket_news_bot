@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestSentNewsPostgres_Save(t *testing.T) {
@@ -86,7 +87,7 @@ func TestSentNewsPostgres_IsExists(t *testing.T) {
 	}
 }
 
-func TestSentNewsPostgres_Clean(t *testing.T) {
+func TestSentNewsPostgres_DeleteByDate(t *testing.T) {
 	godotenv.Load("../../.env_test") // Загружаем переменные окружения
 	cfg, _ := config.Init()
 	db, _ := NewPostgresDB(cfg.Db)
@@ -103,7 +104,7 @@ func TestSentNewsPostgres_Clean(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := r.Clean()
+			err := r.DeleteByDate(time.Now())
 			assert.NoError(t, err)
 			assert.Equal(t, r.IsExists("test1"), false)
 			assert.Equal(t, r.IsExists("test2"), false)
