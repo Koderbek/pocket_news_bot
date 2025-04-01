@@ -38,7 +38,13 @@ func main() {
 	date := time.Now().Add(-1 * cfg.Cleaner.Period * 24 * time.Hour)
 	if err := repos.SentNews.DeleteByDate(date); err != nil {
 		logRep.Error(logSource, err.Error())
-	} else {
-		logRep.Info(logSource, "DeleteByDate sent_news is completed")
+		return
 	}
+
+	if err := logRep.DeleteByDate(date); err != nil {
+		logRep.Error(logSource, err.Error())
+		return
+	}
+
+	logRep.Info(logSource, "Cleaning is completed")
 }

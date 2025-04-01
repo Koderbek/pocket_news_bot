@@ -1,10 +1,14 @@
 package log_repository
 
-import "database/sql"
+import (
+	"database/sql"
+	"time"
+)
 
 type Logger interface {
 	Error(source, message string) error
 	Info(source, message string) error
+	DeleteByDate(date time.Time) error
 }
 
 type LogRepository struct {

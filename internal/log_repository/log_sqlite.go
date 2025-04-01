@@ -2,6 +2,7 @@ package log_repository
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -34,4 +35,13 @@ func (l *LogSqlite) Error(source, message string) error {
 
 func (l *LogSqlite) Info(source, message string) error {
 	return l.log(source, infoLevel, message)
+}
+
+func (l *LogSqlite) DeleteByDate(date time.Time) error {
+	_, err := l.db.Exec(
+		fmt.Sprintf("DELETE FROM logs WHERE timestamp < $1;"),
+		date.Format(time.DateTime),
+	)
+
+	return err
 }
