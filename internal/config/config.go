@@ -30,6 +30,10 @@ type Rkn struct {
 	DefaultTimeout time.Duration `mapstructure:"defaultTimeout"`
 }
 
+type Cleaner struct {
+	Period time.Duration `mapstructure:"period"`
+}
+
 type MessageSender struct {
 	MailingTimeEnd   int           `mapstructure:"mailingTimeEnd"`
 	MailingTimeStart int           `mapstructure:"mailingTimeStart"`
@@ -48,6 +52,7 @@ type Config struct {
 	RootPath      string
 	News          News
 	Rkn           Rkn
+	Cleaner       Cleaner
 	Db            Db
 	Messages      Messages
 	MessageSender MessageSender
@@ -92,6 +97,10 @@ func (cfg *Config) unmarshal() error {
 	}
 
 	if err := viper.UnmarshalKey("rkn", &cfg.Rkn); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("cleaner", &cfg.Cleaner); err != nil {
 		return err
 	}
 

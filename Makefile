@@ -15,30 +15,30 @@ run_bot: build_bot
 
 build_import:
 	mkdir -p ./.bin
-	go build -o ./.bin/import_blocked_resources cmd/import_blocked_resources/main.go
-	chmod +x ./.bin/import_blocked_resources
+	go build -o ./.bin/importer cmd/importer/main.go
+	chmod +x ./.bin/importer
 
 run_import: build_import
-	echo "Running import_blocked_resources..."
-	./.bin/import_blocked_resources
+	echo "Running importer..."
+	./.bin/importer
 
 build_clean:
 	mkdir -p ./.bin
-	go build -o ./.bin/clean_sent_news cmd/clean_sent_news/main.go
-	chmod +x ./.bin/clean_sent_news
+	go build -o ./.bin/cleaner cmd/cleaner/main.go
+	chmod +x ./.bin/cleaner
 
 run_clean: build_clean
-	echo "Running clean_sent_news..."
-	./.bin/clean_sent_news
+	echo "Running cleaner..."
+	./.bin/cleaner
 
 build_sender:
 	mkdir -p ./.bin
-	go build -o ./.bin/message_sender cmd/message_sender/main.go
-	chmod +x ./.bin/message_sender
+	go build -o ./.bin/sender cmd/sender/main.go
+	chmod +x ./.bin/sender
 
 run_sender: build_sender
-	echo "Running message_sender..."
-	./.bin/message_sender
+	echo "Running sender..."
+	./.bin/sender
 
 compose_up:
 	docker compose build

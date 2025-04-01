@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const logSource = "clean_sent_news"
+const logSource = "cleaner"
 
 func main() {
 	cfg, err := config.Init()
@@ -35,7 +35,8 @@ func main() {
 	defer db.Close()
 
 	repos := repository.NewPostgresRepository(db)
-	if err := repos.SentNews.DeleteByDate(time.Now().Add(-7 * 24 * time.Hour)); err != nil {
+	date := time.Now().Add(-1 * cfg.Cleaner.Period * 24 * time.Hour)
+	if err := repos.SentNews.DeleteByDate(date); err != nil {
 		logRep.Error(logSource, err.Error())
 	} else {
 		logRep.Info(logSource, "DeleteByDate sent_news is completed")

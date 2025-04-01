@@ -6,6 +6,9 @@ rkn:
   url: "https://reestr.rublacklist.net/api/v3/domains/"
   defaultTimeout: 10
 
+cleaner:
+  period: 7
+
 messageSender:
   categorySleep: 30
   requestLimit: 96

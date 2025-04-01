@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"github.com/Koderbek/pocket_news_bot/internal/config"
 	"github.com/Koderbek/pocket_news_bot/internal/log_repository"
-	"github.com/Koderbek/pocket_news_bot/internal/message_sender"
-	"github.com/Koderbek/pocket_news_bot/internal/news"
 	"github.com/Koderbek/pocket_news_bot/internal/repository"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/Koderbek/pocket_news_bot/internal/rkn"
 	"log"
 )
 
-const logSource = "message_sender"
+const logSource = "importer"
 
 func main() {
 	cfg, err := config.Init()
@@ -37,16 +35,11 @@ func main() {
 	defer db.Close()
 
 	repos := repository.NewPostgresRepository(db)
-	botApi, err := tgbotapi.NewBotAPI(cfg.TelegramToken)
-	if err != nil {
-		logRep.Error(logSource, err.Error())
-	}
-
-	newsClient := news.NewGNewsClient(repos, cfg.News)
-	sender := message_sender.NewSender(botApi, newsClient, repos, cfg.MessageSender)
-	if err := sender.Start(); err != nil {
+	rknClient := rkn.NewRoskomsvobodaClient(cfg.Rkn)
+	rknImport := rkn.NewImport(rknClient, repos, cfg.Import)
+	if err := rknImport.Run(); err != nil {
 		logRep.Error(logSource, err.Error())
 	} else {
-		logRep.Info(logSource, "Sending is completed")
+		logRep.Info(logSource, "Import is completed")
 	}
 }
