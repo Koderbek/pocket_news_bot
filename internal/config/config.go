@@ -17,6 +17,7 @@ type Messages struct {
 
 type Db struct {
 	ConnectionUrl string
+	RootPath      string
 }
 
 type News struct {
@@ -32,6 +33,14 @@ type Rkn struct {
 
 type Cleaner struct {
 	Period time.Duration `mapstructure:"period"`
+}
+
+type Stmp struct {
+	Password string
+	Server   string `mapstructure:"server"`
+	Port     int    `mapstructure:"port"`
+	From     string `mapstructure:"from"`
+	To       string `mapstructure:"to"`
 }
 
 type MessageSender struct {
@@ -53,6 +62,7 @@ type Config struct {
 	News          News
 	Rkn           Rkn
 	Cleaner       Cleaner
+	Stmp          Stmp
 	Db            Db
 	Messages      Messages
 	MessageSender MessageSender
@@ -104,6 +114,10 @@ func (cfg *Config) unmarshal() error {
 		return err
 	}
 
+	if err := viper.UnmarshalKey("stmp", &cfg.Stmp); err != nil {
+		return err
+	}
+
 	if err := viper.UnmarshalKey("messageSender", &cfg.MessageSender); err != nil {
 		return err
 	}
@@ -119,7 +133,9 @@ func (cfg *Config) fromEnv() error {
 	cfg.TelegramToken = os.Getenv("TELEGRAM_API_KEY")
 	cfg.RootPath = os.Getenv("ROOT_PATH")
 	cfg.Db.ConnectionUrl = os.Getenv("DB_CONNECTION")
+	cfg.Db.RootPath = os.Getenv("DB_ROOT_PATH")
 	cfg.News.ApiKey = os.Getenv("NEWS_API_KEY")
+	cfg.Stmp.Password = os.Getenv("STMP_PASSWORD")
 
 	return nil
 }

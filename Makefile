@@ -31,6 +31,15 @@ run_clean: build_clean
 	echo "Running cleaner..."
 	./.bin/cleaner
 
+build_backup:
+	mkdir -p ./.bin
+	go build -o ./.bin/backup cmd/backup/main.go
+	chmod +x ./.bin/backup
+
+run_backup: build_backup
+	echo "Running backup..."
+	./.bin/backup
+
 build_sender:
 	mkdir -p ./.bin
 	go build -o ./.bin/sender cmd/sender/main.go

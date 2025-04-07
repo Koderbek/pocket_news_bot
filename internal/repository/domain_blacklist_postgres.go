@@ -33,7 +33,7 @@ func (r *DomainBlacklistPostgres) Save(domains []string) error {
 
 	query := fmt.Sprintf(
 		"INSERT INTO %s (domain) VALUES %s ON CONFLICT (domain) DO NOTHING;",
-		domainBlacklistTable,
+		DomainBlacklistTable,
 		strings.Join(placeholders, ","),
 	)
 
@@ -43,7 +43,7 @@ func (r *DomainBlacklistPostgres) Save(domains []string) error {
 
 func (r *DomainBlacklistPostgres) IsExists(searchDomain string) bool {
 	var domain string
-	query := fmt.Sprintf("SELECT domain FROM %s WHERE domain=$1", domainBlacklistTable)
+	query := fmt.Sprintf("SELECT domain FROM %s WHERE domain=$1", DomainBlacklistTable)
 	err := r.db.Get(&domain, query, searchDomain)
 
 	return err == nil && domain == searchDomain

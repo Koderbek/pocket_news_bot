@@ -21,7 +21,7 @@ func (r *ChatCategoryPostgres) Add(chatId int64, categoryId int8, name string) e
 		ON CONFLICT (chat_id, category_id)
 			DO UPDATE SET active      = 'Y',
 						  last_update = NOW();
-	`, chatCategoryTable)
+	`, ChatCategoryTable)
 
 	_, err := r.db.Exec(query, chatId, categoryId, name)
 
@@ -35,7 +35,7 @@ func (r *ChatCategoryPostgres) Deactivate(chatId int64, categoryId int8) error {
 			last_update = NOW()
 		WHERE chat_id = $1
 		  AND category_id = $2;
-	`, chatCategoryTable)
+	`, ChatCategoryTable)
 
 	_, err := r.db.Exec(query, chatId, categoryId)
 	return err
@@ -47,7 +47,7 @@ func (r *ChatCategoryPostgres) DeactivateChat(chatId int64) error {
 		SET active      = 'N',
 			last_update = NOW()
 		WHERE chat_id = $1;
-	`, chatCategoryTable)
+	`, ChatCategoryTable)
 
 	_, err := r.db.Exec(query, chatId)
 	return err
@@ -64,7 +64,7 @@ func (r *ChatCategoryPostgres) GetByChatId(chatId int64) ([]model.ChatCategory, 
 		FROM %s cc
 				 INNER JOIN %s c on c.id = cc.category_id
 		WHERE cc.chat_id = $1 AND cc.active = 'Y';
-	`, chatCategoryTable, categoryTable)
+	`, ChatCategoryTable, CategoryTable)
 
 	if err := r.db.Select(&items, query, chatId); err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (r *ChatCategoryPostgres) GetByCategoryId(categoryId int8) ([]model.ChatCat
 		FROM %s cc
 				 INNER JOIN %s c on c.id = cc.category_id
 		WHERE cc.category_id = $1 AND cc.active = 'Y';
-	`, chatCategoryTable, categoryTable)
+	`, ChatCategoryTable, CategoryTable)
 
 	if err := r.db.Select(&items, query, categoryId); err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (r *ChatCategoryPostgres) HasChatCategory(chatId int64, categoryId int8) bo
 	var chatCategory model.ChatCategory
 	query := fmt.Sprintf(
 		"SELECT category_id FROM %s WHERE chat_id=$1 AND category_id=$2 AND active='Y'",
-		chatCategoryTable,
+		ChatCategoryTable,
 	)
 
 	err := r.db.Get(&chatCategory, query, chatId, categoryId)

@@ -9,6 +9,12 @@ rkn:
 cleaner:
   period: 7
 
+stmp:
+  server: "smtp.gmail.com"
+  port: 587
+  from: "kurnosov1603@gmail.com"
+  to: "kurnosovys@mail.ru"
+
 messageSender:
   categorySleep: 30
   requestLimit: 96

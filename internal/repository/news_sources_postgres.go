@@ -43,7 +43,7 @@ func (r *NewsSourcesPostgres) Save(newsSources []model.NewsSource) error {
 			ON CONFLICT (domain, category)
 			DO UPDATE SET last_update = NOW(), active = EXCLUDED.active;
 		`,
-		newsSourcesTable,
+		NewsSourcesTable,
 		strings.Join(placeholders, ","),
 	)
 

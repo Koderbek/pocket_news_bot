@@ -25,7 +25,7 @@ func (r *SentNewsPostgres) Save(linksHash []string) error {
 		values = append(values, fmt.Sprintf("('%s')", hash))
 	}
 
-	query := fmt.Sprintf("INSERT INTO %s (url_hash_sum) values %s ON CONFLICT (url_hash_sum) DO NOTHING", sentNewsTable, strings.Join(values, ","))
+	query := fmt.Sprintf("INSERT INTO %s (url_hash_sum) values %s ON CONFLICT (url_hash_sum) DO NOTHING", SentNewsTable, strings.Join(values, ","))
 	_, err := r.db.Exec(query)
 
 	return err
@@ -33,14 +33,14 @@ func (r *SentNewsPostgres) Save(linksHash []string) error {
 
 func (r *SentNewsPostgres) IsExists(linkHash string) bool {
 	var result string
-	query := fmt.Sprintf("SELECT url_hash_sum FROM %s WHERE url_hash_sum=$1", sentNewsTable)
+	query := fmt.Sprintf("SELECT url_hash_sum FROM %s WHERE url_hash_sum=$1", SentNewsTable)
 	err := r.db.Get(&result, query, linkHash)
 
 	return err == nil && result == linkHash
 }
 
 func (r *SentNewsPostgres) DeleteByDate(date time.Time) error {
-	sql := fmt.Sprintf("DELETE FROM %s WHERE created_at < $1;", sentNewsTable)
+	sql := fmt.Sprintf("DELETE FROM %s WHERE created_at < $1;", SentNewsTable)
 	_, err := r.db.Exec(sql, date.Format(time.DateTime))
 
 	return err

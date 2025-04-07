@@ -1,6 +1,7 @@
 .idea
-.bin
-logs
+/.bin
+/logs
+/backup
 
 .env*
 *.log

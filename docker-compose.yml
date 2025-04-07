@@ -5,7 +5,8 @@ services:
     image: postgres:14.8-alpine
     restart: always
     volumes:
-      - bot_db:/var/lib/postgresql
+      - bot_db:${DB_ROOT_PATH}
+      - ./backup:${DB_ROOT_PATH}/backup
     ports:
       - "5432:5432"
     env_file:
@@ -35,7 +36,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./logs:/usr/local/src/logs
+      - ./logs:${ROOT_PATH}/logs
+      - ./backup:${ROOT_PATH}/backup
     depends_on:
       postgres_db:
         condition: service_healthy
